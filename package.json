@@ -1,0 +1,20 @@
+{
+  "name": "hub-zero",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Hub Zero: Imran Syed Naqvi's landing page and the first LinkHub page.",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.13",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

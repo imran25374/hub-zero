@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js and build output
+.next/
+out/
+build/
+dist/
+
+# Turborepo
+.turbo/
+
+# Vercel
+.vercel/
+
+# Environment files: never commit real keys. Only the example is tracked.
+.env
+.env*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Certificates
+*.pem
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/

@@ -1,0 +1,12 @@
+# Store text with LF line endings so Windows and Linux (Vercel) builds see identical files.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
