@@ -1,0 +1,49 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { HeroSplit } from "@/components/layouts/hero-split";
+import { LinkList } from "@/components/layouts/link-list";
+import { MagazineGrid } from "@/components/layouts/magazine-grid";
+import { SiteHeader } from "@/components/site-header";
+import { findSection, getHub, type Hub, type HubSection } from "@/lib/hub";
+
+// Published sections are prerendered. A section published later renders on its
+// first visit. Cache Components needs at least one param at build time, so a
+// build without database access still lists "about" (it renders as not found).
+export async function generateStaticParams() {
+  const hub = await getHub();
+  const slugs = hub?.sections.map((section) => ({ slug: section.slug })) ?? [];
+  return slugs.length > 0 ? slugs : [{ slug: "about" }];
+}
+
+export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
+  const { slug } = await params;
+  const section = findSection(await getHub(), slug);
+  return section ? { title: section.title, description: section.description ?? undefined } : {};
+}
+
+export default async function SectionPage({ params }: PageProps<"/[slug]">) {
+  const { slug } = await params;
+  const hub = await getHub();
+  const section = findSection(hub, slug);
+  if (!hub || !section) notFound();
+
+  return (
+    <>
+      <SiteHeader hub={hub} current={section.slug} />
+      <SectionLayout hub={hub} section={section} />
+    </>
+  );
+}
+
+function SectionLayout({ hub, section }: { hub: Hub; section: HubSection }) {
+  switch (section.layout_id) {
+    case "hero-split":
+      return <HeroSplit hub={hub} section={section} />;
+    case "magazine-grid":
+      return <MagazineGrid section={section} />;
+    default:
+      // dashboard, portfolio-mosaic, classic-stack: designed in Stage 3.
+      return <LinkList section={section} />;
+  }
+}

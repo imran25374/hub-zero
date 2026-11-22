@@ -1,0 +1,120 @@
+@import "@workspace/ui/globals.css";
+
+/*
+ * Hub Zero theme. Taken from the book covers: a night ground, parchment text,
+ * and the warm band where sky meets land on every cover (the horizon).
+ */
+:root {
+  color-scheme: dark;
+  --background: #0c0a08;
+  --foreground: #ede5d8;
+  --card: #15110d;
+  --card-foreground: #ede5d8;
+  --popover: #15110d;
+  --popover-foreground: #ede5d8;
+  --primary: #eaa96a;
+  --primary-foreground: #1b1209;
+  --secondary: #1f1914;
+  --secondary-foreground: #ede5d8;
+  --muted: #1f1914;
+  --muted-foreground: #a89c8b;
+  --accent: #241c15;
+  --accent-foreground: #ede5d8;
+  --border: rgb(237 229 216 / 0.12);
+  --input: rgb(237 229 216 / 0.16);
+  --ring: #eaa96a;
+
+  --horizon: #eaa96a;
+  --horizon-glow: #f6c890;
+  --horizon-deep: #8f4f27;
+}
+
+@theme inline {
+  --font-serif: var(--font-garamond), "Iowan Old Style", Georgia, serif;
+  --color-horizon: var(--horizon);
+  --color-horizon-glow: var(--horizon-glow);
+}
+
+@layer base {
+  ::selection {
+    background: rgb(234 169 106 / 0.35);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* The horizon: a warm line with the glow of a sun just below it. Used once, on the home page. */
+  .horizon {
+    position: relative;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--horizon-deep) 12%,
+      var(--horizon) 38%,
+      var(--horizon-glow) 50%,
+      var(--horizon) 62%,
+      var(--horizon-deep) 88%,
+      transparent
+    );
+  }
+  .horizon::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(72rem, 140vw);
+    height: 16rem;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      ellipse 50% 100% at 50% 100%,
+      rgb(246 200 144 / 0.2),
+      rgb(234 169 106 / 0.07) 45%,
+      transparent 75%
+    );
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .horizon-dawn {
+      animation: dawn 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .horizon-dawn::before {
+      animation: dawn-glow 2.4s ease-out both;
+    }
+  }
+
+  /* The portrait dissolves into the ground at its edges and stands on the horizon. */
+  .portrait-fade {
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 62%, transparent 100%),
+      linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to bottom, #000 62%, transparent 100%),
+      linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+    mask-composite: intersect;
+  }
+}
+
+@keyframes dawn {
+  from {
+    transform: scaleX(0.1);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dawn-glow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

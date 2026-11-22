@@ -15,6 +15,9 @@ dist/
 # Vercel
 .vercel/
 
+# Original images and their web copies (the site loads them from Supabase Storage)
+/content/
+
 # Environment files: never commit real keys. Only the example is tracked.
 .env
 .env*

@@ -1,19 +1,30 @@
-import { cn } from "@workspace/ui/lib/utils";
+import type { Metadata } from "next";
 
-export default function Home() {
+import { HeroCard } from "@/components/hero-card";
+import { Horizon } from "@/components/horizon";
+import { Notice } from "@/components/notice";
+import { SectionTiles } from "@/components/section-tiles";
+import { getHub } from "@/lib/hub";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const hub = await getHub();
+  return {
+    title: { absolute: hub?.display_name ?? "Imran Naqvi" },
+    description: hub?.identity_statement ?? undefined,
+  };
+}
+
+export default async function HomePage() {
+  const hub = await getHub();
+  if (!hub) {
+    return <Notice title="Content is unavailable right now.">Try again in a minute.</Notice>;
+  }
+
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <p className="text-muted-foreground text-sm font-medium tracking-[0.2em] uppercase">
-        Imran Syed Naqvi
-      </p>
-      <h1
-        className={cn(
-          "mt-4 text-4xl font-semibold tracking-tight text-balance",
-          "sm:text-5xl",
-        )}
-      >
-        Hub Zero: coming December 2026
-      </h1>
+    <main id="content" className="flex flex-1 flex-col">
+      <HeroCard hub={hub} />
+      <Horizon dawn />
+      <SectionTiles hub={hub} />
     </main>
   );
 }

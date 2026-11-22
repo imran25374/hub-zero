@@ -1,7 +1,7 @@
 /**
  * Types for the Supabase schema in supabase/migrations.
  *
- * Hand-written to match 20261122133000_hub_zero_schema.sql. Once the Supabase CLI
+ * Hand-written to match supabase/migrations (schema v1 and v2). Once the Supabase CLI
  * is linked, regenerate with:
  *   pnpm dlx supabase gen types typescript --project-id <project-ref> > packages/lib/src/supabase/database.types.ts
  */
@@ -21,6 +21,12 @@ export type DisclosureLine = "#ad" | "(paid link)";
 
 export type Device = "mobile" | "tablet" | "desktop" | "other";
 
+/** One entry in hubs.social_links. URLs must be https (constraint hubs_social_links_shape). */
+export type SocialLink = { label: string; url: string };
+
+/** Embedded form providers allowed in sections.form_provider. */
+export type FormProvider = "kit";
+
 export type Database = {
   public: {
     Tables: {
@@ -34,6 +40,7 @@ export type Database = {
           cover_image_url: string | null;
           theme_id: string | null;
           layout_id: LayoutArchetype | null;
+          social_links: SocialLink[];
           is_published: boolean;
           created_at: string;
           updated_at: string;
@@ -47,6 +54,7 @@ export type Database = {
           cover_image_url?: string | null;
           theme_id?: string | null;
           layout_id?: LayoutArchetype | null;
+          social_links?: SocialLink[];
           is_published?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -60,6 +68,7 @@ export type Database = {
           cover_image_url?: string | null;
           theme_id?: string | null;
           layout_id?: LayoutArchetype | null;
+          social_links?: SocialLink[];
           is_published?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -74,6 +83,9 @@ export type Database = {
           title: string;
           description: string | null;
           icon_image_url: string | null;
+          body: string | null;
+          form_provider: FormProvider | null;
+          form_id: string | null;
           order_index: number;
           layout_id: LayoutArchetype;
           is_published: boolean;
@@ -87,6 +99,9 @@ export type Database = {
           title: string;
           description?: string | null;
           icon_image_url?: string | null;
+          body?: string | null;
+          form_provider?: FormProvider | null;
+          form_id?: string | null;
           order_index?: number;
           layout_id: LayoutArchetype;
           is_published?: boolean;
@@ -100,6 +115,9 @@ export type Database = {
           title?: string;
           description?: string | null;
           icon_image_url?: string | null;
+          body?: string | null;
+          form_provider?: FormProvider | null;
+          form_id?: string | null;
           order_index?: number;
           layout_id?: LayoutArchetype;
           is_published?: boolean;
@@ -121,12 +139,14 @@ export type Database = {
           id: string;
           section_id: string;
           title: string;
+          subtitle: string | null;
           url: string;
           image_url: string | null;
           description: string | null;
           tags: string[];
           is_affiliate: boolean;
           disclosure_line: DisclosureLine | null;
+          group_label: string | null;
           order_index: number;
           click_count: number;
           is_published: boolean;
@@ -137,12 +157,14 @@ export type Database = {
           id?: string;
           section_id: string;
           title: string;
+          subtitle?: string | null;
           url: string;
           image_url?: string | null;
           description?: string | null;
           tags?: string[];
           is_affiliate?: boolean;
           disclosure_line?: DisclosureLine | null;
+          group_label?: string | null;
           order_index?: number;
           click_count?: number;
           is_published?: boolean;
@@ -153,12 +175,14 @@ export type Database = {
           id?: string;
           section_id?: string;
           title?: string;
+          subtitle?: string | null;
           url?: string;
           image_url?: string | null;
           description?: string | null;
           tags?: string[];
           is_affiliate?: boolean;
           disclosure_line?: DisclosureLine | null;
+          group_label?: string | null;
           order_index?: number;
           click_count?: number;
           is_published?: boolean;
@@ -189,7 +213,7 @@ export type Database = {
           utm_term: string | null;
           utm_content: string | null;
         };
-        /** Only these columns are granted to the public API; id and occurred_at are set by the database. */
+        /** Clicks are written by record_click(), not inserted directly. */
         Insert: {
           id?: never;
           occurred_at?: never;
@@ -228,7 +252,24 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      /** Server only (secret key). Records a click if the link is public and the visitor is under the rate limit. */
+      record_click: {
+        Args: {
+          p_link_id: string;
+          p_visitor_hash: string;
+          p_referrer?: string | null;
+          p_country?: string | null;
+          p_device?: Device | null;
+          p_utm_source?: string | null;
+          p_utm_medium?: string | null;
+          p_utm_campaign?: string | null;
+          p_utm_term?: string | null;
+          p_utm_content?: string | null;
+        };
+        Returns: boolean;
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

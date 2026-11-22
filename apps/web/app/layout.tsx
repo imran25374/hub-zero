@@ -1,22 +1,33 @@
-import type { Metadata } from "next";
-import { GeistMono } from "geist/font/mono";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
-import "@workspace/ui/globals.css";
 
-// Geist is self-hosted from the `geist` package, so builds never depend on Google Fonts.
+import { SiteFooter } from "@/components/site-footer";
+
+import { garamond } from "./fonts";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Imran Syed Naqvi",
-  description: "Hub Zero: coming December 2026.",
+  title: { default: "Imran Naqvi", template: "%s | Imran Naqvi" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c0a08",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col font-sans">{children}</body>
+    <html lang="en" className={`${GeistSans.variable} ${garamond.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col bg-background font-serif text-foreground">
+        <a
+          href="#content"
+          className="sr-only rounded-sm bg-primary px-4 py-2 font-sans text-sm text-primary-foreground focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50"
+        >
+          Skip to content
+        </a>
+        <div className="flex flex-1 flex-col">{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

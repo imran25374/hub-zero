@@ -53,7 +53,7 @@ Names are listed in `.env.example`. Local values go in `apps/web/.env.local`, wh
 Production values go in the Vercel project settings. Never commit real keys.
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: safe in the browser.
-- `SUPABASE_SECRET_KEY`: server only. It bypasses row-level security.
+- `SUPABASE_SECRET_KEY`: server only. It bypasses row-level security. Used by the `/go` redirect to record clicks.
 - `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`, `NEXT_PUBLIC_POSTHOG_HOST`: safe in the browser.
 
 ## Database
@@ -70,9 +70,18 @@ as already applied so it does not run them twice:
 | `hubs` | One identity: hero card fields | Read published rows |
 | `sections` | Venture tiles and their pages | Read published rows of published hubs |
 | `links` | Links inside a section | Read published rows in visible sections |
-| `analytics_events` | One row per link click | Insert only, for visible links |
+| `analytics_events` | One row per link click | None |
 
 Content is written with the secret key (dashboard now, admin page in Stage 3).
+Content loads live in `supabase/content/`; they are one-off data scripts, not migrations.
+Images are in the public Storage bucket `hub-media`; the originals stay out of git in `/content/`.
+
+### Click tracking
+
+Every outbound link points at `/go/<link id>`. The route redirects at once and then records
+the click with `record_click()` (secret key, server only). The database counts at most 10
+clicks a minute per visitor; visitors are identified only by a keyed hash of IP address,
+browser and date, kept for an hour. Crawlers are redirected but not counted.
 The database itself rejects affiliate links not marked `#ad` or `(paid link)`, `javascript:` URLs,
 and layouts outside the five launch archetypes.
 

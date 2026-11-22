@@ -9,3 +9,6 @@
 - Affiliate rules in README.md are non-negotiable on every page that shows affiliate links.
 - Database changes: add a new timestamped file in `supabase/migrations/`; never edit an applied one. Update `packages/lib/src/supabase/database.types.ts` to match.
 - Every table gets explicit grants and RLS policies in its migration. New Supabase projects grant nothing by default.
+- Pages read content through `getHub()` in `apps/web/lib/hub.ts` (cached about a minute). Layouts are chosen by `sections.layout_id`.
+- The footer's Associates statement is fixed in code on purpose; don't move it into the database.
+- Outbound links go through `/go/<id>`; never link affiliate URLs directly.
