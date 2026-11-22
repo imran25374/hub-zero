@@ -52,21 +52,20 @@ export function MagazineGrid({ section }: { section: HubSection }) {
   );
 }
 
-function Cover({ link, sizes }: { link: HubLink; sizes: string }) {
+function Cover({ link, sizes, framed = true }: { link: HubLink; sizes: string; framed?: boolean }) {
   if (!link.image_url) return null;
-  return (
-    // Covers differ slightly in height; they stand on a common baseline.
-    <div className="flex aspect-[9/16] items-end">
-      <Image
-        src={link.image_url}
-        alt={`Cover of ${link.title}`}
-        width={960}
-        height={1707}
-        sizes={sizes}
-        className="h-auto max-h-full w-full rounded-[2px] object-contain shadow-[0_28px_50px_-28px_rgb(234_169_106/0.45)]"
-      />
-    </div>
+  const image = (
+    <Image
+      src={link.image_url}
+      alt={`Cover of ${link.title}`}
+      width={960}
+      height={1707}
+      sizes={sizes}
+      className="h-auto max-h-full w-full rounded-[2px] object-contain shadow-[0_28px_50px_-28px_rgb(234_169_106/0.45)]"
+    />
   );
+  // In a row, covers of slightly different heights stand on a common baseline.
+  return framed ? <div className="flex aspect-[9/16] items-end">{image}</div> : image;
 }
 
 function LinkText({ link, large = false }: { link: HubLink; large?: boolean }) {
@@ -105,7 +104,7 @@ function FeatureCard({ link }: { link: HubLink }) {
   return (
     <article className="mt-10 grid items-end gap-x-14 gap-y-8 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
       <div className="max-w-[22rem]">
-        <Cover link={link} sizes="(min-width: 768px) 352px, 90vw" />
+        <Cover link={link} sizes="(min-width: 768px) 352px, 90vw" framed={false} />
       </div>
       <div className="max-w-[36em] md:pb-4">
         <LinkText link={link} large />

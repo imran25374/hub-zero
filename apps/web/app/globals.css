@@ -86,15 +86,18 @@
     }
   }
 
-  /* The portrait dissolves into the ground at its edges and stands on the horizon. */
+  /*
+   * The portrait dissolves into the ground like a figure in a spotlight: an oval
+   * fade hides the studio backdrop's edges, and the bottom fades into the horizon.
+   */
   .portrait-fade {
     -webkit-mask-image:
-      linear-gradient(to bottom, #000 62%, transparent 100%),
-      linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+      radial-gradient(ellipse 58% 64% at 50% 44%, #000 55%, transparent 100%),
+      linear-gradient(to bottom, #000 60%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to bottom, #000 62%, transparent 100%),
-      linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+      radial-gradient(ellipse 58% 64% at 50% 44%, #000 55%, transparent 100%),
+      linear-gradient(to bottom, #000 60%, transparent 100%);
     mask-composite: intersect;
   }
 }
