@@ -56,6 +56,41 @@ Production values go in the Vercel project settings. Never commit real keys.
 - `SUPABASE_SECRET_KEY`: server only. It bypasses row-level security.
 - `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`, `NEXT_PUBLIC_POSTHOG_HOST`: safe in the browser.
 
+## Database
+
+The schema lives in `supabase/migrations/`, one timestamped SQL file per change.
+Never edit a migration that has been applied; add a new one.
+Until the Supabase CLI is linked, apply a migration by pasting it into
+Supabase dashboard > SQL Editor and running it. Once the CLI is linked, record those
+as already applied so it does not run them twice:
+`pnpm dlx supabase migration repair --status applied <timestamp>`.
+
+| Table | Holds | Public API (publishable key) |
+| --- | --- | --- |
+| `hubs` | One identity: hero card fields | Read published rows |
+| `sections` | Venture tiles and their pages | Read published rows of published hubs |
+| `links` | Links inside a section | Read published rows in visible sections |
+| `analytics_events` | One row per link click | Insert only, for visible links |
+
+Content is written with the secret key (dashboard now, admin page in Stage 3).
+The database itself rejects affiliate links not marked `#ad` or `(paid link)`, `javascript:` URLs,
+and layouts outside the five launch archetypes.
+
+The typed client is in `packages/lib`:
+
+```ts
+import { createPublicClient } from "@workspace/lib/supabase/client";
+
+const supabase = createPublicClient();
+const { data: hub } = await supabase
+  .from("hubs")
+  .select("display_name, sections(slug, title, links(title, url))")
+  .eq("username", "imran")
+  .single();
+```
+
+Types in `packages/lib/src/supabase/database.types.ts` must match the migrations.
+
 ## Adding shadcn/ui components
 
 Run from the repo root. Components land in `packages/ui/src/components` and are imported
