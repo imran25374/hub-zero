@@ -16,7 +16,8 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
       id="content"
       className="mx-auto grid w-full max-w-6xl flex-1 gap-x-16 gap-y-12 px-6 py-14 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:py-20"
     >
-      <div className={section.form_provider ? "md:order-2 md:pt-24" : ""}>
+      {/* With a form, the text comes first on every screen size; the form follows. */}
+      <div className={section.form_provider ? "order-2 md:pt-24" : ""}>
         {section.form_provider ? (
           <FormSlot provider={section.form_provider} formId={section.form_id} />
         ) : (
@@ -35,7 +36,7 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
         )}
       </div>
 
-      <div className={section.form_provider ? "md:order-1" : ""}>
+      <div className={section.form_provider ? "order-1" : ""}>
         <h1 className="font-serif text-[clamp(2.5rem,5vw,3.75rem)] leading-[1.05] font-medium">
           {section.title}
         </h1>

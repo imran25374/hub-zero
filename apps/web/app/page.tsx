@@ -21,7 +21,7 @@ export default async function HomePage() {
   }
 
   return (
-    <main id="content" className="flex flex-1 flex-col">
+    <main id="content" className="flex flex-1 flex-col overflow-x-clip">
       <HeroCard hub={hub} />
       <Horizon dawn />
       <SectionTiles hub={hub} />
