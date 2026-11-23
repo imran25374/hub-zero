@@ -22,11 +22,11 @@ export function SectionTiles({ sections }: { sections: HubSection[] }) {
             {others.map((section) => (
               <li key={section.id}>
                 <Link href={`/${section.slug}`} className="group block py-7">
-                  <h2 className="font-serif text-3xl transition-colors group-hover:text-horizon">
+                  <h2 className="font-serif text-[1.75rem] transition-colors group-hover:text-horizon">
                     {navLabel(section)}
                   </h2>
                   {section.description && (
-                    <p className="mt-2 text-lg leading-snug text-muted-foreground">{section.description}</p>
+                    <p className="mt-2 text-base leading-snug text-muted-foreground">{section.description}</p>
                   )}
                 </Link>
               </li>
@@ -51,16 +51,16 @@ function FeatureTile({ section }: { section: HubSection }) {
               width={960}
               height={1707}
               sizes="(min-width: 1152px) 170px, (min-width: 768px) 15vw, 23vw"
-              className="h-auto w-full rounded-[2px] transition-transform duration-300 group-hover:-translate-y-1"
+              className="h-auto w-full cover-shadow rounded-[2px] transition-transform duration-300 group-hover:-translate-y-1"
             />
           </div>
         ))}
       </div>
-      <h2 className="mt-7 font-serif text-4xl transition-colors group-hover:text-horizon">
+      <h2 className="mt-7 font-serif text-[2.125rem] transition-colors group-hover:text-horizon">
         {navLabel(section)}
       </h2>
       {section.description && (
-        <p className="mt-3 max-w-[34em] text-xl leading-snug text-muted-foreground">{section.description}</p>
+        <p className="mt-3 max-w-[34em] text-lg leading-snug text-muted-foreground">{section.description}</p>
       )}
     </Link>
   );

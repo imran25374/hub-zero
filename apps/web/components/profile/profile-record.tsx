@@ -15,47 +15,47 @@ import {
 type RecordKind = Exclude<ProfileEntryKind, "header" | "document">;
 
 const HEADINGS: Record<RecordKind, string> = {
-  achievement: "Key achievements",
-  skill_group: "Areas of expertise",
+  achievement: "Key Achievements",
+  skill_group: "Areas of Expertise",
   experience: "Experience",
   education: "Education",
-  training: "Training and qualifications",
-  award: "Awards and honours",
-  exposure: "International exposure",
+  training: "Training and Qualifications",
+  award: "Awards and Honours",
+  exposure: "International Exposure",
   publication: "Publications",
   thesis: "Thesis",
   project: "Projects",
-  interest: "Beyond work",
+  interest: "Beyond Work",
   language: "Languages",
 };
 
 const isRecordKind = (kind: ProfileEntryKind): kind is RecordKind => kind !== "header" && kind !== "document";
 
-/** Name line, headline and header lines (rank, place, availability, contact links) of a profile page. */
-export function ProfileHeader({ section }: { section: HubSection }) {
+/** Headline and header lines (rank, place, contact links) of a profile page, inside the sky band. */
+export function ProfileBand({ section }: { section: HubSection }) {
   const lines = entriesOf(section, "header");
   const text = lines.filter((line) => !line.url);
   const links = lines.filter((line) => line.url);
   return (
     <>
       {section.description && (
-        <p className="mt-5 max-w-[30em] text-2xl leading-snug text-muted-foreground italic">{section.description}</p>
+        <p className="on-sky-text mt-4 max-w-[60ch] text-lg leading-snug text-on-sky sm:text-xl">{section.description}</p>
       )}
       {text.length > 0 && (
-        <ul className="mt-6 space-y-1 font-sans text-[0.9375rem] leading-relaxed">
+        <ul className="on-sky-text mt-3 space-y-1 text-[0.9375rem] leading-relaxed text-on-sky">
           {text.map((line) => (
             <li key={line.id}>{line.title}</li>
           ))}
         </ul>
       )}
       {links.length > 0 && (
-        <ul className="mt-5 flex flex-wrap gap-x-7 gap-y-2 font-sans text-sm">
+        <ul className="on-sky-text mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-on-sky">
           {links.map((line) => (
             <li key={line.id}>
               <a
                 href={line.url!}
                 {...(line.url!.startsWith("mailto:") ? {} : { target: "_blank", rel: "me noopener" })}
-                className="border-b border-horizon/40 pb-0.5 transition-colors hover:border-horizon hover:text-horizon"
+                className="underline-offset-4 hover:underline"
               >
                 {line.title}
                 {!line.url!.startsWith("mailto:") && <span className="sr-only"> (opens in a new tab)</span>}
@@ -82,12 +82,17 @@ export function ProfileRecord({ section }: { section: HubSection }) {
         const entries = entriesOf(section, kind);
         if (entries.length === 0) return null;
         return (
-          <section key={kind} aria-labelledby={`record-${kind}`} className="mt-16 md:mt-20">
-            <h2 id={`record-${kind}`} className="flex items-center gap-5 font-serif text-[1.75rem] italic">
+          <section
+            key={kind}
+            aria-labelledby={`record-${kind}`}
+            className="mt-10 grid gap-x-8 gap-y-3 border-t border-border pt-8 md:mt-12 md:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] md:pt-10"
+          >
+            <h2 id={`record-${kind}`} className="font-serif text-[1.5rem] leading-tight sm:text-[1.75rem]">
               {HEADINGS[kind]}
-              <span aria-hidden className="h-px flex-1 bg-border" />
             </h2>
-            <RecordBlock kind={kind} entries={entries} section={section} />
+            <div className="min-w-0">
+              <RecordBlock kind={kind} entries={entries} section={section} />
+            </div>
           </section>
         );
       })}
@@ -100,10 +105,10 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
   switch (kind) {
     case "achievement":
       return (
-        <ul className="mt-8 space-y-5">
+        <ul className="space-y-3">
           {entries.map((entry) => (
-            <li key={entry.id} className="relative pl-6 text-[1.125rem] leading-relaxed">
-              <span aria-hidden className="absolute top-[0.8em] left-0 h-px w-3 bg-horizon" />
+            <li key={entry.id} className="relative pl-6 text-[1.0625rem] leading-relaxed">
+              <span aria-hidden className="absolute top-[0.8em] left-0 h-px w-2 bg-horizon" />
               {entry.title}
             </li>
           ))}
@@ -111,14 +116,14 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
       );
     case "skill_group":
       return (
-        <dl className="mt-8 space-y-7">
+        <dl className="space-y-5">
           {entries.map((entry) => (
             <div key={entry.id}>
-              <dt className="font-serif text-xl">{entry.title}</dt>
+              <dt className="text-xs font-semibold tracking-[0.06em] text-horizon uppercase">{entry.title}</dt>
               <dd className="mt-3">
-                <ul className="flex flex-wrap gap-2 font-sans text-[0.8125rem]">
+                <ul className="flex flex-wrap gap-2 text-[0.8125rem]">
                   {itemsOf(entry).map((item) => (
-                    <li key={item} className="rounded-[3px] border border-border px-2.5 py-1 text-foreground/90">
+                    <li key={item} className="rounded-[3px] border border-border bg-card px-2.5 py-1.5 text-foreground">
                       {item}
                     </li>
                   ))}
@@ -137,30 +142,30 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
     case "exposure":
     case "interest":
       return (
-        <dl className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]">
+        <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]">
           {entries.map((entry) => (
             <div key={entry.id} className="contents">
-              <dt className="font-sans text-sm text-muted-foreground sm:pt-1">{entry.title}</dt>
-              <dd className="text-[1.125rem] leading-relaxed">{entry.body}</dd>
+              <dt className="text-sm font-semibold text-foreground sm:pt-0.5">{entry.title}</dt>
+              <dd className="text-[1.0625rem] leading-relaxed text-muted-foreground">{entry.body}</dd>
             </div>
           ))}
         </dl>
       );
     case "language":
       return (
-        <p className="mt-8 text-[1.125rem]">
+        <p className="text-[1.0625rem]">
           {entries.map((entry) => (entry.body ? `${entry.title} (${entry.body})` : entry.title)).join(", ")}
         </p>
       );
     default:
       // education, training, thesis, project
       return (
-        <ul className="mt-8 space-y-9">
+        <ul className="space-y-8">
           {entries.map((entry) => (
             <li key={entry.id}>
               <EntryText entry={entry} />
               {entry.file_url && (
-                <p className="mt-6 font-sans">
+                <p className="mt-5">
                   <FileLink href={entry.file_url}>
                     {entry.kind === "thesis" ? "Read the thesis (PDF)" : "Read the full text (PDF)"}
                   </FileLink>
@@ -184,7 +189,7 @@ function RichText({ text, level }: { text: string | null; level: 3 | 4 }) {
   return textBlocks(text).map((block, index) => {
     if (block.type === "heading") {
       return (
-        <SubHeading key={index} className="mt-6 font-sans text-sm font-medium text-horizon">
+        <SubHeading key={index} className="mt-5 text-xs font-semibold tracking-[0.06em] text-horizon uppercase">
           {block.text}
         </SubHeading>
       );
@@ -215,11 +220,11 @@ function EntryText({ entry, level = 3 }: { entry: ProfileEntry; level?: 3 | 4 })
   const Title = level === 3 ? "h3" : "h4";
   return (
     <>
-      {period && <p className="font-sans text-sm text-muted-foreground tabular-nums">{period}</p>}
-      <Title className={`mt-1 font-serif leading-snug ${level === 3 ? "text-2xl" : "text-xl"}`}>{entry.title}</Title>
-      {where && <p className="text-lg leading-snug text-muted-foreground italic">{where}</p>}
+      {period && <p className="text-[0.8125rem] text-muted-foreground tabular-nums">{period}</p>}
+      <Title className={`mt-1 font-serif leading-snug ${level === 3 ? "text-[1.375rem]" : "text-lg"}`}>{entry.title}</Title>
+      {where && <p className="text-[0.9375rem] leading-snug text-muted-foreground">{where}</p>}
       {entry.body && (
-        <div className={level === 3 ? "text-[1.125rem] leading-relaxed" : "text-[1.0625rem] leading-relaxed"}>
+        <div className={level === 3 ? "text-base leading-relaxed" : "text-[0.9375rem] leading-relaxed"}>
           <RichText text={entry.body} level={level} />
         </div>
       )}
@@ -230,7 +235,7 @@ function EntryText({ entry, level = 3 }: { entry: ProfileEntry; level?: 3 | 4 })
 /** Career as a timeline, most recent first; current roles carry a lit marker. Nested appointments follow their parent. */
 function Timeline({ entries, section, nested = false }: { entries: ProfileEntry[]; section: HubSection; nested?: boolean }) {
   return (
-    <ol className={nested ? "mt-8 border-l border-border/70" : "mt-9 border-l border-border"}>
+    <ol className={nested ? "mt-6 border-l border-border/70" : "border-l border-border"}>
       {entries.map((entry) => {
         const children = childrenOf(section, entry);
         return (
@@ -239,7 +244,7 @@ function Timeline({ entries, section, nested = false }: { entries: ProfileEntry[
               aria-hidden
               className={`absolute top-[0.4rem] rounded-full ${nested ? "-left-[3.5px] size-1.5" : "-left-[4.5px] size-2"} ${
                 entry.is_current
-                  ? "bg-horizon shadow-[0_0_10px_2px_rgb(246_200_144/0.45)]"
+                  ? "bg-horizon"
                   : "bg-[color-mix(in_srgb,var(--muted-foreground)_70%,transparent)]"
               }`}
             />
@@ -255,12 +260,12 @@ function Timeline({ entries, section, nested = false }: { entries: ProfileEntry[
 /** Medals and awards: the photo when there is one, with its caption. */
 function Awards({ entries }: { entries: ProfileEntry[] }) {
   return (
-    <ul className="mt-9 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+    <ul className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
       {entries.map((entry) => (
         <li key={entry.id}>
           <figure>
             {entry.image_url && (
-              <div className="relative mb-6 h-72 w-full">
+              <div className="relative mb-5 h-56 w-full">
                 <Image
                   src={entry.image_url}
                   alt={`The ${entry.title}`}
@@ -290,8 +295,8 @@ function Publications({ entries }: { entries: ProfileEntry[] }) {
   }
   const grouped = groups.some((group) => group.label);
   return groups.map((group, index) => (
-    <div key={group.label ?? index} className={grouped ? "mt-9" : "mt-8"}>
-      {group.label && <h3 className="font-sans text-sm font-medium text-horizon">{group.label}</h3>}
+    <div key={group.label ?? index} className={index === 0 ? "" : "mt-8"}>
+      {group.label && <h3 className="text-xs font-semibold tracking-[0.06em] text-horizon uppercase">{group.label}</h3>}
       <ul className={`divide-y divide-border border-y border-border ${group.label ? "mt-3" : ""}`}>
         {group.entries.map((entry) => {
           const period = formatPeriod(entry);
@@ -299,13 +304,13 @@ function Publications({ entries }: { entries: ProfileEntry[] }) {
           return (
             <li key={entry.id} className="grid gap-x-8 gap-y-1 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
               <div>
-                <Title className="font-serif text-[1.375rem] leading-snug">
+                <Title className="font-serif text-[1.25rem] leading-snug">
                   {entry.url ? <EntryLink href={entry.url}>{entry.title}</EntryLink> : entry.title}
                 </Title>
                 {entry.organisation && <p className="text-muted-foreground italic">{entry.organisation}</p>}
-                {entry.body && <p className="mt-1.5 text-[1.0625rem] leading-relaxed">{entry.body}</p>}
+                {entry.body && <p className="mt-1.5 text-base leading-relaxed text-muted-foreground">{entry.body}</p>}
               </div>
-              {period && <p className="font-sans text-sm text-muted-foreground tabular-nums">{period}</p>}
+              {period && <p className="text-[0.8125rem] text-muted-foreground tabular-nums">{period}</p>}
             </li>
           );
         })}
@@ -317,7 +322,7 @@ function Publications({ entries }: { entries: ProfileEntry[] }) {
 /** A link to a page on this site, or to another site in a new tab. */
 function EntryLink({ href, children }: { href: string; children: React.ReactNode }) {
   const className =
-    "underline decoration-horizon/40 decoration-1 underline-offset-[5px] transition-colors hover:text-horizon hover:decoration-horizon";
+    "text-horizon underline-offset-4 hover:underline";
   if (href.startsWith("/")) {
     return (
       <Link href={href} className={className}>
@@ -339,7 +344,7 @@ function FileLink({ href, children }: { href: string; children: React.ReactNode 
       href={href}
       target="_blank"
       rel="noopener"
-      className="inline-flex items-center rounded-[3px] bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-horizon-glow"
+      className="inline-flex min-h-11 items-center rounded-[3px] bg-primary px-[18px] text-sm font-semibold text-primary-foreground transition-colors hover:bg-horizon-glow"
     >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>
@@ -352,14 +357,14 @@ function DocumentActions({ entries, className }: { entries: ProfileEntry[]; clas
   const ready = entries.filter((entry) => entry.file_url ?? entry.url);
   if (ready.length === 0) return null;
   return (
-    <ul className={`flex flex-wrap gap-4 font-sans ${className ?? ""}`}>
+    <ul className={`flex flex-wrap gap-4 ${className ?? ""}`}>
       {ready.map((entry) => (
         <li key={entry.id}>
           <a
             href={(entry.file_url ?? entry.url)!}
             target="_blank"
             rel="noopener"
-            className="inline-flex items-center rounded-[3px] bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-horizon-glow"
+            className="inline-flex min-h-11 items-center rounded-[3px] bg-primary px-[18px] text-sm font-semibold text-primary-foreground transition-colors hover:bg-horizon-glow"
           >
             {entry.title}
             <span className="sr-only"> (opens in a new tab)</span>

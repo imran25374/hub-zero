@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { HeroSplit } from "@/components/layouts/hero-split";
 import { LinkList } from "@/components/layouts/link-list";
 import { MagazineGrid } from "@/components/layouts/magazine-grid";
-import { SiteHeader } from "@/components/site-header";
+import { ProfileBand } from "@/components/profile/profile-record";
+import { BandLead, BandTitle, SkyBand } from "@/components/site-header";
 import { findSection, getHub, type Hub, type HubSection } from "@/lib/hub";
 
 // Published sections are prerendered. A section published later renders on its
@@ -31,9 +32,17 @@ export default async function SectionPage({ params }: PageProps<"/[slug]">) {
   const section = findSection(hub, slug);
   if (!hub || !section) notFound();
 
+  const isProfile = section.profile_entries.length > 0;
   return (
     <>
-      <SiteHeader hub={hub} current={section.slug} />
+      <SkyBand hub={hub} current={section.slug} portrait={isProfile}>
+        <BandTitle>{section.title}</BandTitle>
+        {isProfile ? (
+          <ProfileBand section={section} />
+        ) : (
+          section.description && <BandLead>{section.description}</BandLead>
+        )}
+      </SkyBand>
       <SectionLayout hub={hub} section={section} />
     </>
   );

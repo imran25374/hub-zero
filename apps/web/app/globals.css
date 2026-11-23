@@ -1,43 +1,53 @@
 @import "@workspace/ui/globals.css";
 
 /*
- * Hub Zero theme. Taken from the book covers: a night ground, parchment text,
- * and the warm band where sky meets land on every cover (the horizon).
+ * Hub Zero theme, "Monsoon": paper ground, ink text, a storm-teal to sand sky
+ * as the header band on every page, teal for links and buttons. Approved
+ * 23 Nov 2026; replaces the dark book-cover theme.
  */
 :root {
-  color-scheme: dark;
-  --background: #0c0a08;
-  --foreground: #ede5d8;
-  --card: #15110d;
-  --card-foreground: #ede5d8;
-  --popover: #15110d;
-  --popover-foreground: #ede5d8;
-  --primary: #eaa96a;
-  --primary-foreground: #1b1209;
-  --secondary: #1f1914;
-  --secondary-foreground: #ede5d8;
-  --muted: #1f1914;
-  --muted-foreground: #a89c8b;
-  --accent: #241c15;
-  --accent-foreground: #ede5d8;
-  --border: rgb(237 229 216 / 0.12);
-  --input: rgb(237 229 216 / 0.16);
-  --ring: #eaa96a;
+  color-scheme: light;
+  --background: #fbfaf7;
+  --foreground: #15191f;
+  --card: #ffffff;
+  --card-foreground: #15191f;
+  --popover: #ffffff;
+  --popover-foreground: #15191f;
+  --primary: #2f5a5f;
+  --primary-foreground: #ffffff;
+  --secondary: #eef0ea;
+  --secondary-foreground: #15191f;
+  --muted: #f1efe8;
+  --muted-foreground: #4a5160;
+  --accent: #eef0ea;
+  --accent-foreground: #15191f;
+  --border: rgb(21 25 31 / 0.14);
+  --input: rgb(21 25 31 / 0.18);
+  --ring: #2f5a5f;
 
-  --horizon: #eaa96a;
-  --horizon-glow: #f6c890;
-  --horizon-deep: #8f4f27;
+  /* Kept under their old names so existing classes (text-horizon etc.) stay valid. */
+  --horizon: #2f5a5f;
+  --horizon-glow: #244a4e;
+  --horizon-deep: #1f3f43;
+
+  --sky-top: #3f5a66;
+  --sky-mid: #7d9a9e;
+  --sky-low: #c9c3ae;
+  --sky-base: #e3dccb;
+  --on-sky: #fff8f0;
 }
 
 @theme inline {
-  --font-serif: var(--font-garamond), "Iowan Old Style", Georgia, serif;
+  --font-serif: var(--font-baskerville), "Libre Baskerville", Georgia, serif;
+  --font-sans: var(--font-franklin), "Libre Franklin", system-ui, sans-serif;
   --color-horizon: var(--horizon);
   --color-horizon-glow: var(--horizon-glow);
+  --color-on-sky: var(--on-sky);
 }
 
 @layer base {
   ::selection {
-    background: rgb(234 169 106 / 0.35);
+    background: rgb(47 90 95 / 0.22);
   }
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -46,78 +56,45 @@
 }
 
 @layer components {
-  /* The horizon: a warm line with the glow of a sun just below it. Used once, on the home page. */
-  .horizon {
-    position: relative;
-    height: 1px;
+  /* The sky: every page opens under it. */
+  .sky-band {
+    color: var(--on-sky);
     background: linear-gradient(
-      90deg,
-      transparent,
-      var(--horizon-deep) 12%,
-      var(--horizon) 38%,
-      var(--horizon-glow) 50%,
-      var(--horizon) 62%,
-      var(--horizon-deep) 88%,
-      transparent
+      180deg,
+      var(--sky-top) 0%,
+      var(--sky-mid) 45%,
+      var(--sky-low) 80%,
+      var(--sky-base) 100%
     );
   }
-  .horizon::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: min(72rem, 140vw);
-    height: 16rem;
-    transform: translateX(-50%);
-    background: radial-gradient(
-      ellipse 50% 100% at 50% 100%,
-      rgb(246 200 144 / 0.2),
-      rgb(234 169 106 / 0.07) 45%,
-      transparent 75%
-    );
-    pointer-events: none;
+  /* The home page: the same sky laid over a photograph (--sky-photo). */
+  .sky-hero {
+    color: var(--on-sky);
+    background:
+      linear-gradient(
+        180deg,
+        rgb(63 90 102 / 0.92) 0%,
+        rgb(125 154 158 / 0.78) 45%,
+        rgb(201 195 174 / 0.72) 80%,
+        rgb(227 220 203 / 0.9) 100%
+      ),
+      var(--sky-photo, none) center 40% / cover no-repeat;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .horizon-dawn {
-      animation: dawn 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    }
-    .horizon-dawn::before {
-      animation: dawn-glow 2.4s ease-out both;
-    }
+  .on-sky-text {
+    text-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
   }
-
-  /*
-   * The portrait dissolves into the ground like a figure in a spotlight: an oval
-   * fade hides the studio backdrop's edges, and the bottom fades into the horizon.
-   */
-  .portrait-fade {
-    -webkit-mask-image:
-      radial-gradient(closest-side, #000 62%, transparent 100%),
-      linear-gradient(to bottom, #000 60%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      radial-gradient(closest-side, #000 62%, transparent 100%),
-      linear-gradient(to bottom, #000 60%, transparent 100%);
-    mask-composite: intersect;
+  .on-sky-title {
+    text-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
   }
-}
-
-@keyframes dawn {
-  from {
-    transform: scaleX(0.1);
-    opacity: 0;
+  /* The portrait sits on the band's lower edge. */
+  .portrait-ring {
+    border-radius: 9999px;
+    border: 4px solid var(--background);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.22);
+    object-fit: cover;
+    object-position: top;
   }
-  to {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-
-@keyframes dawn-glow {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+  .cover-shadow {
+    box-shadow: 0 12px 28px rgb(21 25 31 / 0.18);
   }
 }

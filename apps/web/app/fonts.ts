@@ -1,21 +1,24 @@
 import localFont from "next/font/local";
 
-// EB Garamond, self-hosted from @fontsource-variable/eb-garamond: the reading
-// face for the whole site, in keeping with the books. Geist (sans) is kept for
-// small interface text: navigation, buttons, footer.
-export const garamond = localFont({
+// Libre Baskerville for headings and Libre Franklin for text, self-hosted from
+// Fontsource so the build does not depend on fonts.googleapis.com. Chosen with
+// the Monsoon theme on 23 Nov 2026 (decision log).
+export const baskerville = localFont({
   src: [
-    {
-      path: "../node_modules/@fontsource-variable/eb-garamond/files/eb-garamond-latin-wght-normal.woff2",
-      weight: "400 800",
-      style: "normal",
-    },
-    {
-      path: "../node_modules/@fontsource-variable/eb-garamond/files/eb-garamond-latin-wght-italic.woff2",
-      weight: "400 800",
-      style: "italic",
-    },
+    { path: "../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-400-italic.woff2", weight: "400", style: "italic" },
+    { path: "../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-700-italic.woff2", weight: "700", style: "italic" },
   ],
-  variable: "--font-garamond",
+  variable: "--font-baskerville",
+  display: "swap",
+});
+
+export const franklin = localFont({
+  src: [
+    { path: "../node_modules/@fontsource-variable/libre-franklin/files/libre-franklin-latin-wght-normal.woff2", weight: "100 900", style: "normal" },
+    { path: "../node_modules/@fontsource-variable/libre-franklin/files/libre-franklin-latin-wght-italic.woff2", weight: "100 900", style: "italic" },
+  ],
+  variable: "--font-franklin",
   display: "swap",
 });

@@ -119,6 +119,20 @@ export function navLabel(section: HubSection): string {
   return section.nav_label ?? section.title;
 }
 
+/**
+ * Whether a section gets a menu entry. A Hero Split section shown in full on
+ * the home page without a record of its own (the short About) lives there;
+ * its menu entry would only lead to the same text again.
+ */
+export function inNav(section: HubSection): boolean {
+  return !(
+    section.home_display === "inline" &&
+    section.layout_id === "hero-split" &&
+    !section.form_provider &&
+    section.profile_entries.length === 0
+  );
+}
+
 export type TextBlock =
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }

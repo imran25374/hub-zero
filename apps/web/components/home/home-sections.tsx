@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { FormSlot } from "@/components/form-slot";
-import { LinkGroups } from "@/components/layouts/magazine-grid";
+import { BookGrid } from "@/components/layouts/magazine-grid";
 import { ctaHref, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
@@ -24,30 +24,37 @@ export function HomeSection({ hub, section }: { hub: Hub; section: HubSection })
 
 const headingId = (section: HubSection) => `${section.slug}-heading`;
 
-/** Hero Split without a form: the short version, and a link to the rest. */
+const sectionHeading = "font-serif text-[1.75rem] leading-tight sm:text-[2.125rem]";
+
+/** Hero Split without a form: the short version, and a button to the rest. */
 function HomeIntro({ hub, section }: { hub: Hub; section: HubSection }) {
   const text = section.excerpt ? paragraphs(section.excerpt) : paragraphs(section.body).slice(0, 1);
   return (
     <section
       id={section.slug}
       aria-labelledby={headingId(section)}
-      className="mx-auto grid w-full max-w-6xl gap-x-14 gap-y-5 px-6 pt-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:pt-24"
+      className="mx-auto grid w-full max-w-6xl gap-x-8 gap-y-4 px-6 pt-20 md:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] md:pt-28"
     >
-      <h2 id={headingId(section)} className="font-serif text-3xl leading-tight md:pt-1 md:text-[2.25rem]">
-        {section.title}
-      </h2>
       <div>
-        <div className="max-w-[34em] space-y-5 text-[1.3rem] leading-[1.65]">
+        <h2 id={headingId(section)} className={sectionHeading}>
+          {section.title}
+        </h2>
+        {section.description && (
+          <p className="mt-3 hidden text-[0.9375rem] leading-snug text-muted-foreground md:block">{section.description}</p>
+        )}
+      </div>
+      <div>
+        <div className="max-w-[66ch] space-y-5 text-[1.0625rem] leading-[1.6] sm:text-lg">
           {text.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
-        <p className="mt-8 font-sans text-sm">
+        <p className="mt-6">
           <Link
             href={ctaHref(hub, section)}
-            className="border-b border-horizon/40 pb-0.5 transition-colors hover:border-horizon hover:text-horizon"
+            className="inline-flex min-h-11 items-center rounded-[3px] border border-primary px-[18px] text-sm font-semibold text-primary transition-colors hover:bg-secondary"
           >
-            {section.cta_label ?? "Read more"} <span aria-hidden>→</span>
+            {section.cta_label ?? "Read more"}
           </Link>
         </p>
       </div>
@@ -55,7 +62,7 @@ function HomeIntro({ hub, section }: { hub: Hub; section: HubSection }) {
   );
 }
 
-/** Magazine Grid: the same cards as the section's own page. */
+/** Magazine Grid: the books in one row of covers, with a link to the full page. */
 function HomeGrid({ section }: { section: HubSection }) {
   return (
     <section
@@ -63,18 +70,18 @@ function HomeGrid({ section }: { section: HubSection }) {
       aria-labelledby={headingId(section)}
       className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28"
     >
-      <header className="max-w-[40em]">
-        <h2
-          id={headingId(section)}
-          className="font-serif text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.05] font-medium"
-        >
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h2 id={headingId(section)} className={sectionHeading}>
           {section.title}
         </h2>
-        {section.description && (
-          <p className="mt-4 text-xl leading-snug text-muted-foreground sm:text-2xl">{section.description}</p>
-        )}
-      </header>
-      <LinkGroups links={section.links} level={3} />
+        <Link href={`/${section.slug}`} className="text-sm font-semibold text-horizon underline-offset-4 hover:underline">
+          All {section.links.length === 4 ? "four" : section.links.length} books
+        </Link>
+      </div>
+      {section.description && (
+        <p className="mt-2 max-w-[70ch] text-base leading-relaxed text-muted-foreground">{section.description}</p>
+      )}
+      <BookGrid links={section.links} level={3} />
     </section>
   );
 }
@@ -87,13 +94,13 @@ function HomeSignup({ section }: { section: HubSection }) {
       aria-labelledby={headingId(section)}
       className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28"
     >
-      <div className="grid items-center gap-x-14 gap-y-8 rounded-[3px] border border-horizon/25 bg-card px-7 py-10 sm:px-10 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:px-14 md:py-14">
+      <div className="grid items-center gap-x-14 gap-y-8 rounded-[3px] border border-border bg-card px-7 py-10 sm:px-10 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:px-14 md:py-14">
         <div>
-          <h2 id={headingId(section)} className="font-serif text-[clamp(2rem,4vw,2.75rem)] leading-tight">
+          <h2 id={headingId(section)} className={sectionHeading}>
             {section.title}
           </h2>
           {section.description && (
-            <p className="mt-4 max-w-[30em] text-xl leading-relaxed">{section.description}</p>
+            <p className="mt-4 max-w-[30em] text-lg leading-relaxed">{section.description}</p>
           )}
         </div>
         {section.form_provider && (

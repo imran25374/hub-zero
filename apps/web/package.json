@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@fontsource-variable/eb-garamond": "^5.3.0",
+    "@fontsource-variable/libre-franklin": "^5.3.0",
+    "@fontsource/libre-baskerville": "^5.3.0",
     "@workspace/lib": "workspace:*",
     "@workspace/ui": "workspace:*",
     "geist": "^1.9.2",

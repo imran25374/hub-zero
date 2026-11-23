@@ -2,7 +2,7 @@
 // every page whatever happens to the content.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border font-sans text-sm text-muted-foreground">
+    <footer className="border-t border-border text-[0.8125rem] text-muted-foreground">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
         <p>As an Amazon Associate I earn from qualifying purchases.</p>
         <a
