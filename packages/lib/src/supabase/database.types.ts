@@ -1,7 +1,7 @@
 /**
  * Types for the Supabase schema in supabase/migrations.
  *
- * Hand-written to match supabase/migrations (schema v1 to v3). Once the Supabase CLI
+ * Hand-written to match supabase/migrations (schema v1 to v4). Once the Supabase CLI
  * is linked, regenerate with:
  *   pnpm dlx supabase gen types typescript --project-id <project-ref> > packages/lib/src/supabase/database.types.ts
  */
@@ -246,6 +246,7 @@ export type Database = {
           section_id: string;
           parent_id: string | null;
           kind: ProfileEntryKind;
+          group_label: string | null;
           title: string;
           organisation: string | null;
           place: string | null;
@@ -267,6 +268,7 @@ export type Database = {
           section_id: string;
           parent_id?: string | null;
           kind: ProfileEntryKind;
+          group_label?: string | null;
           title: string;
           organisation?: string | null;
           place?: string | null;
@@ -288,6 +290,7 @@ export type Database = {
           section_id?: string;
           parent_id?: string | null;
           kind?: ProfileEntryKind;
+          group_label?: string | null;
           title?: string;
           organisation?: string | null;
           place?: string | null;

@@ -160,8 +160,10 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
             <li key={entry.id}>
               <EntryText entry={entry} />
               {entry.file_url && (
-                <p className="mt-5 font-sans text-sm">
-                  <FileLink href={entry.file_url}>Download the full text (PDF)</FileLink>
+                <p className="mt-6 font-sans">
+                  <FileLink href={entry.file_url}>
+                    {entry.kind === "thesis" ? "Read the thesis (PDF)" : "Read the full text (PDF)"}
+                  </FileLink>
                 </p>
               )}
             </li>
@@ -258,14 +260,15 @@ function Awards({ entries }: { entries: ProfileEntry[] }) {
         <li key={entry.id}>
           <figure>
             {entry.image_url && (
-              <Image
-                src={entry.image_url}
-                alt={`The ${entry.title}`}
-                width={800}
-                height={800}
-                sizes="(min-width: 1152px) 300px, (min-width: 640px) 40vw, 90vw"
-                className="mb-6 aspect-square w-full max-w-[18rem] rounded-[2px] object-contain"
-              />
+              <div className="relative mb-6 h-72 w-full">
+                <Image
+                  src={entry.image_url}
+                  alt={`The ${entry.title}`}
+                  fill
+                  sizes="(min-width: 640px) 300px, 90vw"
+                  className="object-contain object-left-bottom"
+                />
+              </div>
             )}
             <figcaption>
               <EntryText entry={entry} />
@@ -277,26 +280,38 @@ function Awards({ entries }: { entries: ProfileEntry[] }) {
   );
 }
 
-/** Writing as a list of titled links. */
+/** Writing as titled links, under group headings when the entries have them. */
 function Publications({ entries }: { entries: ProfileEntry[] }) {
-  return (
-    <ul className="mt-8 divide-y divide-border border-y border-border">
-      {entries.map((entry) => {
-        const period = formatPeriod(entry);
-        return (
-          <li key={entry.id} className="grid gap-x-8 gap-y-1 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
-            <div>
-              <h3 className="font-serif text-[1.375rem] leading-snug">
-                {entry.url ? <EntryLink href={entry.url}>{entry.title}</EntryLink> : entry.title}
-              </h3>
-              {entry.organisation && <p className="text-muted-foreground italic">{entry.organisation}</p>}
-            </div>
-            {period && <p className="font-sans text-sm text-muted-foreground tabular-nums">{period}</p>}
-          </li>
-        );
-      })}
-    </ul>
-  );
+  const groups: { label: string | null; entries: ProfileEntry[] }[] = [];
+  for (const entry of entries) {
+    const last = groups.at(-1);
+    if (last && last.label === entry.group_label) last.entries.push(entry);
+    else groups.push({ label: entry.group_label ?? null, entries: [entry] });
+  }
+  const grouped = groups.some((group) => group.label);
+  return groups.map((group, index) => (
+    <div key={group.label ?? index} className={grouped ? "mt-9" : "mt-8"}>
+      {group.label && <h3 className="font-sans text-sm font-medium text-horizon">{group.label}</h3>}
+      <ul className={`divide-y divide-border border-y border-border ${group.label ? "mt-3" : ""}`}>
+        {group.entries.map((entry) => {
+          const period = formatPeriod(entry);
+          const Title = grouped ? "h4" : "h3";
+          return (
+            <li key={entry.id} className="grid gap-x-8 gap-y-1 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
+              <div>
+                <Title className="font-serif text-[1.375rem] leading-snug">
+                  {entry.url ? <EntryLink href={entry.url}>{entry.title}</EntryLink> : entry.title}
+                </Title>
+                {entry.organisation && <p className="text-muted-foreground italic">{entry.organisation}</p>}
+                {entry.body && <p className="mt-1.5 text-[1.0625rem] leading-relaxed">{entry.body}</p>}
+              </div>
+              {period && <p className="font-sans text-sm text-muted-foreground tabular-nums">{period}</p>}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  ));
 }
 
 /** A link to a page on this site, or to another site in a new tab. */
@@ -324,7 +339,7 @@ function FileLink({ href, children }: { href: string; children: React.ReactNode 
       href={href}
       target="_blank"
       rel="noopener"
-      className="border-b border-horizon/40 pb-0.5 transition-colors hover:border-horizon hover:text-horizon"
+      className="inline-flex items-center rounded-[3px] bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-horizon-glow"
     >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>

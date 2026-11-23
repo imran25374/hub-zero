@@ -78,7 +78,7 @@ The home page is a long scroll. `sections.home_display` sets how each section ap
 cards, a section with a form its sign-up box), `tile`, or `hidden`. A Hero Split section with
 profile entries is a profile page: headline from `description`, summary from `body`, then the entries
 in a fixed order. Entry bodies are plain text: blank lines for paragraphs, `- ` for bullets, `### ` for sub-headings.
-`sections.nav_label` is the menu name when the title is long.
+`sections.nav_label` is the menu name when the title is long; `profile_entries.group_label` puts entries of one kind under small headings.
 
 Content is written with the secret key (dashboard now, admin page in Stage 3).
 Content loads live in `supabase/content/`; they are one-off data scripts, not migrations.
