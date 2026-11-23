@@ -19,7 +19,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const section = findSection(await getHub(), slug);
-  return section ? { title: section.title, description: section.description ?? undefined } : {};
+  if (!section) return {};
+  // A section with its own menu label (a profile titled with a full name) reads "Title | Label".
+  const title = section.nav_label ? { absolute: `${section.title} | ${section.nav_label}` } : section.title;
+  return { title, description: section.description ?? undefined };
 }
 
 export default async function SectionPage({ params }: PageProps<"/[slug]">) {

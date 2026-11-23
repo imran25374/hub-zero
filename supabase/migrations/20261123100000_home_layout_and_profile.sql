@@ -5,9 +5,13 @@
 --     'inline' (shown in full on the home page), 'tile' (a link tile), or 'hidden'.
 --   * sections.excerpt is the short version an inline section shows on the home page.
 --   * sections.cta_label / cta_href set the "read more" link under that excerpt.
---   * profile_entries holds a professional record (experience, education, awards,
---     publications, thesis, research projects, downloadable documents) for any
---     section; the page lays them out in a fixed order.
+--   * sections.nav_label is a short name for menus when the title is long
+--     (a profile titled with a person's full name shows as "Profile").
+--   * profile_entries holds a professional record for any section: header lines,
+--     achievements, areas of expertise, experience (with nested appointments),
+--     education, training, awards, international exposure, publications, thesis,
+--     projects, interests, languages and downloadable documents. The page lays
+--     them out in a fixed order.
 --   * Storage bucket hub-documents holds public PDFs (a CV, a thesis).
 
 -- ---------------------------------------------------------------------------
@@ -21,10 +25,12 @@ alter table public.sections
   add column cta_label text check (char_length(cta_label) between 1 and 60),
   add column cta_href text
     check (cta_href ~ '^(https://|/(?!/))' and char_length(cta_href) <= 2048),
-  add constraint sections_cta_pair check ((cta_label is null) = (cta_href is null));
+  add constraint sections_cta_pair check ((cta_label is null) = (cta_href is null)),
+  add column nav_label text check (char_length(nav_label) between 1 and 40);
 
 comment on column public.sections.home_display is 'inline = shown in full on the home page; tile = link tile; hidden = not on the home page.';
 comment on column public.sections.excerpt is 'Short version shown when the section is inline on the home page.';
+comment on column public.sections.nav_label is 'Short name for menus; the title is used when empty.';
 comment on column public.sections.cta_href is 'Target of the link under the excerpt: a path on this site (/profile) or an https URL.';
 
 -- ---------------------------------------------------------------------------
@@ -34,15 +40,19 @@ comment on column public.sections.cta_href is 'Target of the link under the exce
 create table public.profile_entries (
   id             uuid primary key default gen_random_uuid(),
   section_id     uuid not null references public.sections (id) on delete cascade,
+  parent_id      uuid references public.profile_entries (id) on delete cascade,
   kind           text not null
-                   check (kind in ('experience', 'education', 'award', 'publication', 'thesis', 'project', 'document')),
-  title          text not null check (char_length(title) between 1 and 200),
+                   check (kind in ('header', 'achievement', 'skill_group', 'experience', 'education', 'training',
+                                   'award', 'exposure', 'publication', 'thesis', 'project', 'interest',
+                                   'language', 'document')),
+  title          text not null check (char_length(title) between 1 and 300),
   organisation   text check (char_length(organisation) <= 160),
+  place          text check (char_length(place) <= 120),
   start_date     date,
   end_date       date,
   date_precision text not null default 'month' check (date_precision in ('year', 'month', 'day')),
   is_current     boolean not null default false,
-  body           text check (char_length(body) <= 3000),
+  body           text check (char_length(body) <= 6000),
   image_url      text check (image_url ~ '^https://'),
   url            text check (url ~* '^(https?://|mailto:|/(?!/))' and char_length(url) <= 2048),
   file_url       text check (file_url ~ '^https://'),
@@ -50,6 +60,7 @@ create table public.profile_entries (
   is_published   boolean not null default true,
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now(),
+  constraint profile_entries_not_own_parent check (parent_id is null or parent_id <> id),
   constraint profile_entries_dates check (end_date is null or start_date is null or end_date >= start_date),
   -- Amazon links belong in public.links, where the affiliate disclosure is enforced.
   constraint profile_entries_no_amazon check (
@@ -58,12 +69,15 @@ create table public.profile_entries (
 );
 
 comment on table public.profile_entries is 'Professional record shown on a section page: experience, education, awards, publications, thesis, projects, documents.';
+comment on column public.profile_entries.parent_id is 'Nests an entry under another, e.g. appointments within an army career.';
+comment on column public.profile_entries.body is 'Plain text. Blank lines separate paragraphs; lines starting "- " are bullets; a line starting "### " is a sub-heading.';
 comment on column public.profile_entries.date_precision is 'How dates are shown: year (2024), month (Dec 2024) or day (3 Dec 2024).';
 comment on column public.profile_entries.is_current is 'Shows the period as "to present".';
 comment on column public.profile_entries.url is 'A link: an https URL or a path on this site such as /books.';
 comment on column public.profile_entries.file_url is 'A downloadable file, e.g. a PDF in the hub-documents bucket.';
 
 create index profile_entries_section_order_idx on public.profile_entries (section_id, kind, order_index);
+create index profile_entries_parent_idx on public.profile_entries (parent_id) where parent_id is not null;
 
 create trigger profile_entries_set_updated_at
   before update on public.profile_entries

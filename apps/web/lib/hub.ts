@@ -104,8 +104,55 @@ export function ctaHref(hub: Hub, section: HubSection): string {
   return `/${section.slug}`;
 }
 
+/** Top-level entries of one kind, in order. Nested entries come from childrenOf. */
 export function entriesOf(section: HubSection, kind: ProfileEntryKind): ProfileEntry[] {
-  return section.profile_entries.filter((entry) => entry.kind === kind);
+  return section.profile_entries.filter((entry) => entry.kind === kind && !entry.parent_id);
+}
+
+/** Entries nested under another, such as appointments within an army career. */
+export function childrenOf(section: HubSection, parent: ProfileEntry): ProfileEntry[] {
+  return section.profile_entries.filter((entry) => entry.parent_id === parent.id);
+}
+
+/** The short name used in menus and tiles. */
+export function navLabel(section: HubSection): string {
+  return section.nav_label ?? section.title;
+}
+
+export type TextBlock =
+  | { type: "paragraph"; text: string }
+  | { type: "list"; items: string[] }
+  | { type: "heading"; text: string };
+
+/**
+ * Reads an entry's plain-text body: blank lines separate paragraphs, lines
+ * starting "- " are bullets, and a line starting "### " is a sub-heading.
+ */
+export function textBlocks(text: string | null): TextBlock[] {
+  const blocks: TextBlock[] = [];
+  let paragraph: string[] = [];
+  const flush = () => {
+    if (paragraph.length) blocks.push({ type: "paragraph", text: paragraph.join(" ") });
+    paragraph = [];
+  };
+  for (const raw of (text ?? "").split("\n")) {
+    const line = raw.trim();
+    if (!line) {
+      flush();
+    } else if (line.startsWith("### ")) {
+      flush();
+      blocks.push({ type: "heading", text: line.slice(4).trim() });
+    } else if (line.startsWith("- ")) {
+      flush();
+      const last = blocks.at(-1);
+      if (last?.type === "list") last.items.push(line.slice(2).trim());
+      else blocks.push({ type: "list", items: [line.slice(2).trim()] });
+    } else {
+      paragraph.push(line);
+    }
+  }
+  flush();
+  return blocks;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

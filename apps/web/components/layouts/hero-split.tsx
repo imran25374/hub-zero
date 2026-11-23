@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { FormSlot } from "@/components/form-slot";
-import { ProfileRecord } from "@/components/profile/profile-record";
+import { ProfileHeader, ProfileRecord } from "@/components/profile/profile-record";
 import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
@@ -12,6 +12,7 @@ import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
 export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
   const image = section.form_provider ? null : (section.icon_image_url ?? hub.profile_image_url);
   const body = paragraphs(section.body);
+  const isProfile = section.profile_entries.length > 0;
 
   return (
     <main
@@ -42,6 +43,7 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
         <h1 className="font-serif text-[clamp(2.5rem,5vw,3.75rem)] leading-[1.05] font-medium">
           {section.title}
         </h1>
+        {isProfile && <ProfileHeader section={section} />}
         {body.length > 0 ? (
           <div className="mt-8 max-w-[34em] space-y-5 text-[1.3rem] leading-[1.65]">
             {body.map((paragraph, index) => (
@@ -49,13 +51,14 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
             ))}
           </div>
         ) : (
+          !isProfile &&
           section.description && (
             <p className="mt-6 max-w-[30em] text-2xl leading-snug text-muted-foreground">
               {section.description}
             </p>
           )
         )}
-        {section.profile_entries.length > 0 && <ProfileRecord section={section} />}
+        {isProfile && <ProfileRecord section={section} />}
       </div>
     </main>
   );

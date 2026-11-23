@@ -70,13 +70,15 @@ as already applied so it does not run them twice:
 | `hubs` | One identity: hero card fields | Read published rows |
 | `sections` | Venture tiles and their pages | Read published rows of published hubs |
 | `links` | Links inside a section | Read published rows in visible sections |
-| `profile_entries` | A professional record (experience, education, awards, publications, thesis, projects, documents) | Read published rows in visible sections |
+| `profile_entries` | A professional record: header lines, achievements, expertise, experience (nested via `parent_id`), education, training, awards, exposure, publications, thesis, projects, interests, languages, documents | Read published rows in visible sections |
 | `analytics_events` | One row per link click | None |
 
 The home page is a long scroll. `sections.home_display` sets how each section appears there:
 `inline` (in full: Hero Split shows `excerpt` and a `cta_label`/`cta_href` link, Magazine Grid its
 cards, a section with a form its sign-up box), `tile`, or `hidden`. A Hero Split section with
-profile entries is a profile page: summary from `body`, then the entries in a fixed order.
+profile entries is a profile page: headline from `description`, summary from `body`, then the entries
+in a fixed order. Entry bodies are plain text: blank lines for paragraphs, `- ` for bullets, `### ` for sub-headings.
+`sections.nav_label` is the menu name when the title is long.
 
 Content is written with the secret key (dashboard now, admin page in Stage 3).
 Content loads live in `supabase/content/`; they are one-off data scripts, not migrations.

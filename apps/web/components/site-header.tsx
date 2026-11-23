@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { Hub } from "@/lib/hub";
+import { navLabel, type Hub } from "@/lib/hub";
 
 export function SiteHeader({ hub, current }: { hub: Hub; current?: string }) {
   return (
@@ -18,7 +18,7 @@ export function SiteHeader({ hub, current }: { hub: Hub; current?: string }) {
                   aria-current={section.slug === current ? "page" : undefined}
                   className="transition-colors hover:text-foreground aria-[current=page]:text-horizon"
                 >
-                  {section.title}
+                  {navLabel(section)}
                 </Link>
               </li>
             ))}

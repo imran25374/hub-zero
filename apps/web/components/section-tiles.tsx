@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import type { HubSection } from "@/lib/hub";
+import { navLabel, type HubSection } from "@/lib/hub";
 
 /**
  * One tile per section given. A section whose links carry images (the books)
@@ -23,7 +23,7 @@ export function SectionTiles({ sections }: { sections: HubSection[] }) {
               <li key={section.id}>
                 <Link href={`/${section.slug}`} className="group block py-7">
                   <h2 className="font-serif text-3xl transition-colors group-hover:text-horizon">
-                    {section.title}
+                    {navLabel(section)}
                   </h2>
                   {section.description && (
                     <p className="mt-2 text-lg leading-snug text-muted-foreground">{section.description}</p>
@@ -57,7 +57,7 @@ function FeatureTile({ section }: { section: HubSection }) {
         ))}
       </div>
       <h2 className="mt-7 font-serif text-4xl transition-colors group-hover:text-horizon">
-        {section.title}
+        {navLabel(section)}
       </h2>
       {section.description && (
         <p className="mt-3 max-w-[34em] text-xl leading-snug text-muted-foreground">{section.description}</p>

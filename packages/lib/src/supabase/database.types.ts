@@ -33,12 +33,19 @@ export type HomeDisplay = (typeof HOME_DISPLAYS)[number];
 
 /** Kinds of profile_entries, in the order a profile page shows them. */
 export const PROFILE_ENTRY_KINDS = [
+  "header",
+  "achievement",
+  "skill_group",
   "experience",
   "education",
+  "training",
   "award",
+  "exposure",
   "publication",
   "thesis",
   "project",
+  "interest",
+  "language",
   "document",
 ] as const;
 export type ProfileEntryKind = (typeof PROFILE_ENTRY_KINDS)[number];
@@ -109,6 +116,7 @@ export type Database = {
           excerpt: string | null;
           cta_label: string | null;
           cta_href: string | null;
+          nav_label: string | null;
           order_index: number;
           layout_id: LayoutArchetype;
           is_published: boolean;
@@ -129,6 +137,7 @@ export type Database = {
           excerpt?: string | null;
           cta_label?: string | null;
           cta_href?: string | null;
+          nav_label?: string | null;
           order_index?: number;
           layout_id: LayoutArchetype;
           is_published?: boolean;
@@ -149,6 +158,7 @@ export type Database = {
           excerpt?: string | null;
           cta_label?: string | null;
           cta_href?: string | null;
+          nav_label?: string | null;
           order_index?: number;
           layout_id?: LayoutArchetype;
           is_published?: boolean;
@@ -234,9 +244,11 @@ export type Database = {
         Row: {
           id: string;
           section_id: string;
+          parent_id: string | null;
           kind: ProfileEntryKind;
           title: string;
           organisation: string | null;
+          place: string | null;
           start_date: string | null;
           end_date: string | null;
           date_precision: DatePrecision;
@@ -253,9 +265,11 @@ export type Database = {
         Insert: {
           id?: string;
           section_id: string;
+          parent_id?: string | null;
           kind: ProfileEntryKind;
           title: string;
           organisation?: string | null;
+          place?: string | null;
           start_date?: string | null;
           end_date?: string | null;
           date_precision?: DatePrecision;
@@ -272,9 +286,11 @@ export type Database = {
         Update: {
           id?: string;
           section_id?: string;
+          parent_id?: string | null;
           kind?: ProfileEntryKind;
           title?: string;
           organisation?: string | null;
+          place?: string | null;
           start_date?: string | null;
           end_date?: string | null;
           date_precision?: DatePrecision;
@@ -294,6 +310,13 @@ export type Database = {
             columns: ["section_id"];
             isOneToOne: false;
             referencedRelation: "sections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profile_entries_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_entries";
             referencedColumns: ["id"];
           },
         ];
