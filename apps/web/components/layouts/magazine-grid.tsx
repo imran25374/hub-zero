@@ -40,9 +40,6 @@ function BookRow({ link }: { link: HubLink }) {
     <article className="grid gap-x-8 gap-y-5 py-8 sm:grid-cols-[minmax(0,3fr)_minmax(0,9fr)]">
       <Cover link={link} sizes="(min-width: 1152px) 270px, (min-width: 640px) 24vw, 180px" className="max-w-[180px] sm:max-w-none" />
       <div className="flex flex-col gap-2.5">
-        {link.group_label && (
-          <p className="text-xs font-semibold tracking-[0.08em] text-horizon uppercase">{link.group_label}</p>
-        )}
         <h3 className="font-serif text-[1.75rem] leading-tight sm:text-[1.875rem]">{link.title}</h3>
         {link.subtitle && <p className="font-serif text-lg leading-snug text-muted-foreground italic">{link.subtitle}</p>}
         {link.description && <p className="mt-1.5 max-w-[66ch] text-base leading-relaxed sm:text-[1.0625rem]">{link.description}</p>}
