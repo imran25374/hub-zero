@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { FormSlot } from "@/components/form-slot";
+import { RichParagraph } from "@/components/rich-text";
 import { BookGrid } from "@/components/layouts/magazine-grid";
 import { ctaHref, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
@@ -46,7 +47,9 @@ function HomeIntro({ hub, section }: { hub: Hub; section: HubSection }) {
       <div>
         <div className="max-w-[66ch] space-y-5 text-[1.0625rem] leading-[1.6] sm:text-lg">
           {text.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
+            <p key={index}>
+              <RichParagraph text={paragraph} />
+            </p>
           ))}
         </div>
         <p className="mt-6">

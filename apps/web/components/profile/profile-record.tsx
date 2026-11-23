@@ -145,7 +145,9 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
         <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]">
           {entries.map((entry) => (
             <div key={entry.id} className="contents">
-              <dt className="text-sm font-semibold text-foreground sm:pt-0.5">{entry.title}</dt>
+              <dt className="text-sm font-semibold text-foreground sm:pt-0.5">
+                {entry.url ? <EntryLink href={entry.url}>{entry.title}</EntryLink> : entry.title}
+              </dt>
               <dd className="text-[1.0625rem] leading-relaxed text-muted-foreground">{entry.body}</dd>
             </div>
           ))}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { FormSlot } from "@/components/form-slot";
+import { RichParagraph } from "@/components/rich-text";
 import { ProfileRecord } from "@/components/profile/profile-record";
 import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
@@ -20,7 +21,9 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
         {body.length > 0 && (
           <div className="max-w-[76ch] space-y-4 text-[1.0625rem] leading-[1.65] sm:text-lg">
             {body.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+              <p key={index}>
+              <RichParagraph text={paragraph} />
+            </p>
             ))}
           </div>
         )}
@@ -55,7 +58,9 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
       </div>
       <div className={`max-w-[66ch] space-y-5 text-[1.0625rem] leading-[1.65] sm:text-lg ${section.form_provider ? "order-1" : ""}`}>
         {body.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
+          <p key={index}>
+              <RichParagraph text={paragraph} />
+            </p>
         ))}
       </div>
     </main>
