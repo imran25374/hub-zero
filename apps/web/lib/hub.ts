@@ -1,13 +1,14 @@
 import { cacheLife, cacheTag } from "next/cache";
 
 import { createPublicClient } from "@workspace/lib/supabase/client";
-import type { Tables } from "@workspace/lib/supabase/database.types";
+import type { ProfileEntryKind, Tables } from "@workspace/lib/supabase/database.types";
 
 /** The hub this site renders. LinkHub will route by username; Hub Zero has one. */
 export const HUB_USERNAME = "imran";
 
 export type HubLink = Tables<"links">;
-export type HubSection = Tables<"sections"> & { links: HubLink[] };
+export type ProfileEntry = Tables<"profile_entries">;
+export type HubSection = Tables<"sections"> & { links: HubLink[]; profile_entries: ProfileEntry[] };
 export type Hub = Tables<"hubs"> & { sections: HubSection[] };
 
 const byOrder = (a: { order_index: number }, b: { order_index: number }) =>
@@ -15,7 +16,8 @@ const byOrder = (a: { order_index: number }, b: { order_index: number }) =>
 
 /**
  * Everything the public site shows, in one query, cached for about a minute.
- * Row-level security already leaves out unpublished hubs, sections and links,
+ * Row-level security already leaves out unpublished hubs, sections, links and
+ * profile entries,
  * so a database edit appears on the site within about a minute, no redeploy.
  *
  * Returns null when Supabase is not configured or not reachable, so a build
@@ -30,7 +32,7 @@ export async function getHub(): Promise<Hub | null> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("hubs")
-      .select("*, sections(*, links(*))")
+      .select("*, sections(*, links(*), profile_entries(*))")
       .eq("username", HUB_USERNAME)
       .maybeSingle();
 
@@ -44,7 +46,11 @@ export async function getHub(): Promise<Hub | null> {
       ...data,
       sections: [...data.sections]
         .sort(byOrder)
-        .map((section) => ({ ...section, links: [...section.links].sort(byOrder) })),
+        .map((section) => ({
+          ...section,
+          links: [...section.links].sort(byOrder),
+          profile_entries: [...section.profile_entries].sort(byOrder),
+        })),
     };
   } catch (error) {
     console.error("getHub:", error instanceof Error ? error.message : error);
@@ -81,4 +87,43 @@ export function paragraphs(text: string | null): string[] {
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
+}
+
+/**
+ * Where a section's "read more" link should go. A path on this site that
+ * names a section only counts while that section is published; otherwise the
+ * link falls back to the section's own page (so "Full profile" points to
+ * /about until /profile is live).
+ */
+export function ctaHref(hub: Hub, section: HubSection): string {
+  const href = section.cta_href;
+  if (!href) return `/${section.slug}`;
+  if (!href.startsWith("/")) return href;
+  const slug = href.slice(1).split(/[/?#]/)[0];
+  if (slug === "" || hub.sections.some((candidate) => candidate.slug === slug)) return href;
+  return `/${section.slug}`;
+}
+
+export function entriesOf(section: HubSection, kind: ProfileEntryKind): ProfileEntry[] {
+  return section.profile_entries.filter((entry) => entry.kind === kind);
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** A date column (yyyy-mm-dd) shown at the entry's precision: 2024, Dec 2024 or 3 Dec 2024. */
+export function formatDate(date: string, precision: ProfileEntry["date_precision"]): string {
+  const [year, month, day] = date.split("-").map(Number);
+  if (precision === "year") return String(year);
+  if (precision === "month") return `${MONTHS[month - 1]} ${year}`;
+  return `${day} ${MONTHS[month - 1]} ${year}`;
+}
+
+/** An entry's period as text, e.g. "2017 – 2019", "Jul 2026 – present" or "2024". */
+export function formatPeriod(entry: ProfileEntry): string | null {
+  const start = entry.start_date && formatDate(entry.start_date, entry.date_precision);
+  const end = entry.is_current
+    ? "present"
+    : entry.end_date && formatDate(entry.end_date, entry.date_precision);
+  if (start && end) return start === end ? start : `${start} – ${end}`;
+  return start || end || null;
 }

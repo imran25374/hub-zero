@@ -70,11 +70,18 @@ as already applied so it does not run them twice:
 | `hubs` | One identity: hero card fields | Read published rows |
 | `sections` | Venture tiles and their pages | Read published rows of published hubs |
 | `links` | Links inside a section | Read published rows in visible sections |
+| `profile_entries` | A professional record (experience, education, awards, publications, thesis, projects, documents) | Read published rows in visible sections |
 | `analytics_events` | One row per link click | None |
+
+The home page is a long scroll. `sections.home_display` sets how each section appears there:
+`inline` (in full: Hero Split shows `excerpt` and a `cta_label`/`cta_href` link, Magazine Grid its
+cards, a section with a form its sign-up box), `tile`, or `hidden`. A Hero Split section with
+profile entries is a profile page: summary from `body`, then the entries in a fixed order.
 
 Content is written with the secret key (dashboard now, admin page in Stage 3).
 Content loads live in `supabase/content/`; they are one-off data scripts, not migrations.
 Images are in the public Storage bucket `hub-media`; the originals stay out of git in `/content/`.
+Public PDFs (a CV, a thesis) go in the bucket `hub-documents` (PDF only, 25 MB).
 
 ### Click tracking
 
@@ -82,8 +89,9 @@ Every outbound link points at `/go/<link id>`. The route redirects at once and t
 the click with `record_click()` (secret key, server only). The database counts at most 10
 clicks a minute per visitor; visitors are identified only by a keyed hash of IP address,
 browser and date, kept for an hour. Crawlers are redirected but not counted.
+Vercel preview deployments redirect without recording, so reviews don't touch the analytics.
 The database itself rejects affiliate links not marked `#ad` or `(paid link)`, `javascript:` URLs,
-and layouts outside the five launch archetypes.
+Amazon links in profile entries (they belong in `links`), and layouts outside the five launch archetypes.
 
 The typed client is in `packages/lib`:
 

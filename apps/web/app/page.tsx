@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { HeroCard } from "@/components/hero-card";
+import { HomeSection, rendersInline } from "@/components/home/home-sections";
 import { Horizon } from "@/components/horizon";
 import { Notice } from "@/components/notice";
 import { SectionTiles } from "@/components/section-tiles";
@@ -20,11 +21,19 @@ export default async function HomePage() {
     return <Notice title="Content is unavailable right now.">Try again in a minute.</Notice>;
   }
 
+  // The long scroll: hero, then the sections shown in full (in their order),
+  // then a tile for each remaining section. "hidden" sections are left out.
+  const inline = hub.sections.filter(rendersInline);
+  const tiles = hub.sections.filter((section) => section.home_display !== "hidden" && !rendersInline(section));
+
   return (
-    <main id="content" className="flex flex-1 flex-col overflow-x-clip">
+    <main id="content" className="flex flex-1 flex-col overflow-x-clip pb-20 md:pb-28">
       <HeroCard hub={hub} />
       <Horizon dawn />
-      <SectionTiles hub={hub} />
+      {inline.map((section) => (
+        <HomeSection key={section.id} hub={hub} section={section} />
+      ))}
+      <SectionTiles sections={tiles} />
     </main>
   );
 }

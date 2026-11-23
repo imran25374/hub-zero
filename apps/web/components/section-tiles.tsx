@@ -1,19 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import type { Hub, HubSection } from "@/lib/hub";
+import type { HubSection } from "@/lib/hub";
 
 /**
- * One tile per published section. A section whose links carry images (the
- * books) gets the wide tile and shows them standing side by side; the rest
- * stack beside it.
+ * One tile per section given. A section whose links carry images (the books)
+ * gets the wide tile and shows them standing side by side; the rest stack
+ * beside it.
  */
-export function SectionTiles({ hub }: { hub: Hub }) {
-  const feature = hub.sections.find((section) => section.links.some((link) => link.image_url));
-  const others = hub.sections.filter((section) => section !== feature);
+export function SectionTiles({ sections }: { sections: HubSection[] }) {
+  if (sections.length === 0) return null;
+  const feature = sections.find((section) => section.links.some((link) => link.image_url));
+  const others = sections.filter((section) => section !== feature);
 
   return (
-    <nav aria-label="Sections" className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
+    <nav aria-label="More sections" className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28">
       <div className={feature ? "grid gap-12 md:grid-cols-3" : "grid"}>
         {feature && <FeatureTile section={feature} />}
         {others.length > 0 && (

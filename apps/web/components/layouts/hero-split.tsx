@@ -1,11 +1,13 @@
 import Image from "next/image";
 
 import { FormSlot } from "@/components/form-slot";
+import { ProfileRecord } from "@/components/profile/profile-record";
 import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
  * Hero Split: text on one side; on the other, the section's form if it has
- * one, otherwise its image (or the hub portrait).
+ * one, otherwise its image (or the hub portrait). A section with profile
+ * entries continues below its text with the full record (a profile page).
  */
 export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
   const image = section.form_provider ? null : (section.icon_image_url ?? hub.profile_image_url);
@@ -53,6 +55,7 @@ export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
             </p>
           )
         )}
+        {section.profile_entries.length > 0 && <ProfileRecord section={section} />}
       </div>
     </main>
   );

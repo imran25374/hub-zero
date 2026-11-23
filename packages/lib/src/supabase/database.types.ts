@@ -1,7 +1,7 @@
 /**
  * Types for the Supabase schema in supabase/migrations.
  *
- * Hand-written to match supabase/migrations (schema v1 and v2). Once the Supabase CLI
+ * Hand-written to match supabase/migrations (schema v1 to v3). Once the Supabase CLI
  * is linked, regenerate with:
  *   pnpm dlx supabase gen types typescript --project-id <project-ref> > packages/lib/src/supabase/database.types.ts
  */
@@ -26,6 +26,25 @@ export type SocialLink = { label: string; url: string };
 
 /** Embedded form providers allowed in sections.form_provider. */
 export type FormProvider = "kit";
+
+/** How a section appears on the home page (sections.home_display). */
+export const HOME_DISPLAYS = ["inline", "tile", "hidden"] as const;
+export type HomeDisplay = (typeof HOME_DISPLAYS)[number];
+
+/** Kinds of profile_entries, in the order a profile page shows them. */
+export const PROFILE_ENTRY_KINDS = [
+  "experience",
+  "education",
+  "award",
+  "publication",
+  "thesis",
+  "project",
+  "document",
+] as const;
+export type ProfileEntryKind = (typeof PROFILE_ENTRY_KINDS)[number];
+
+/** How profile entry dates are shown: 2024, Dec 2024 or 3 Dec 2024. */
+export type DatePrecision = "year" | "month" | "day";
 
 export type Database = {
   public: {
@@ -86,6 +105,10 @@ export type Database = {
           body: string | null;
           form_provider: FormProvider | null;
           form_id: string | null;
+          home_display: HomeDisplay;
+          excerpt: string | null;
+          cta_label: string | null;
+          cta_href: string | null;
           order_index: number;
           layout_id: LayoutArchetype;
           is_published: boolean;
@@ -102,6 +125,10 @@ export type Database = {
           body?: string | null;
           form_provider?: FormProvider | null;
           form_id?: string | null;
+          home_display?: HomeDisplay;
+          excerpt?: string | null;
+          cta_label?: string | null;
+          cta_href?: string | null;
           order_index?: number;
           layout_id: LayoutArchetype;
           is_published?: boolean;
@@ -118,6 +145,10 @@ export type Database = {
           body?: string | null;
           form_provider?: FormProvider | null;
           form_id?: string | null;
+          home_display?: HomeDisplay;
+          excerpt?: string | null;
+          cta_label?: string | null;
+          cta_href?: string | null;
           order_index?: number;
           layout_id?: LayoutArchetype;
           is_published?: boolean;
@@ -192,6 +223,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "links_section_id_fkey";
+            columns: ["section_id"];
+            isOneToOne: false;
+            referencedRelation: "sections";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profile_entries: {
+        Row: {
+          id: string;
+          section_id: string;
+          kind: ProfileEntryKind;
+          title: string;
+          organisation: string | null;
+          start_date: string | null;
+          end_date: string | null;
+          date_precision: DatePrecision;
+          is_current: boolean;
+          body: string | null;
+          image_url: string | null;
+          url: string | null;
+          file_url: string | null;
+          order_index: number;
+          is_published: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          section_id: string;
+          kind: ProfileEntryKind;
+          title: string;
+          organisation?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          date_precision?: DatePrecision;
+          is_current?: boolean;
+          body?: string | null;
+          image_url?: string | null;
+          url?: string | null;
+          file_url?: string | null;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          section_id?: string;
+          kind?: ProfileEntryKind;
+          title?: string;
+          organisation?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          date_precision?: DatePrecision;
+          is_current?: boolean;
+          body?: string | null;
+          image_url?: string | null;
+          url?: string | null;
+          file_url?: string | null;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_entries_section_id_fkey";
             columns: ["section_id"];
             isOneToOne: false;
             referencedRelation: "sections";

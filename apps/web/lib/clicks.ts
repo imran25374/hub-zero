@@ -22,10 +22,15 @@ export type Click = {
  * The visitor is identified only by a keyed hash of IP address, browser and
  * date, used for rate limiting and kept for at most an hour; no IP address is
  * stored. Never throws: a failure to record must not break the redirect.
+ *
+ * Vercel preview deployments redirect but do not record, so reviewing a
+ * preview leaves the live analytics untouched.
  */
 export async function recordClick(click: Click): Promise<void> {
   try {
     if (isBot(click.userAgent)) return;
+    const vercelEnv = process.env.VERCEL_ENV;
+    if (vercelEnv && vercelEnv !== "production") return;
 
     const supabase = createSecretClient();
     const key = process.env.SUPABASE_SECRET_KEY;
