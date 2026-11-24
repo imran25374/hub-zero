@@ -7,6 +7,7 @@ import {
   containerStatus,
   createContainer,
   InstagramError,
+  isFacebookToken,
   mediaPermalink,
   publishContainer,
   refreshToken,
@@ -80,7 +81,8 @@ async function loadCredentials(db: Client, now: Date): Promise<Credentials | nul
 
   const expiresIn = new Date(stored.expires_at).getTime() - now.getTime();
   const age = now.getTime() - new Date(stored.updated_at).getTime();
-  if (expiresIn < 14 * DAY && age > DAY) {
+  // Only Instagram tokens refresh this way; Facebook-type tokens from the dashboard do not expire.
+  if (!isFacebookToken(stored.token) && expiresIn < 14 * DAY && age > DAY) {
     try {
       const fresh = await refreshToken(stored.token);
       await db

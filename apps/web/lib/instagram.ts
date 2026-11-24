@@ -7,8 +7,16 @@ import "server-only";
  * public URL, then publish it once Instagram has processed it.
  */
 
-const ROOT = "https://graph.instagram.com";
-const API = `${ROOT}/v24.0`;
+const VERSION = "v26.0";
+
+/**
+ * Tokens from Business Login for Instagram (IGAA…) use graph.instagram.com;
+ * Facebook-type tokens (EAA…, from Facebook Login for Business or a system
+ * user) use graph.facebook.com. Meta's newer "Unified login" apps can issue
+ * either, so the host follows the token.
+ */
+export const isFacebookToken = (token: string) => token.startsWith("EAA");
+const hostFor = (token: string) => (isFacebookToken(token) ? "https://graph.facebook.com" : "https://graph.instagram.com");
 
 export class InstagramError extends Error {
   constructor(
@@ -31,8 +39,8 @@ async function call<T>(method: "GET" | "POST", path: string, params: Params, tok
   }
   body.set("access_token", token);
 
-  // Versioned paths start with "/"; the token endpoints are unversioned and given in full.
-  const base = path.startsWith("http") ? path : `${API}${path}`;
+  // Versioned paths start with "/"; the token endpoint is unversioned and given without one.
+  const base = path.startsWith("/") ? `${hostFor(token)}/${VERSION}${path}` : `${hostFor(token)}/${path}`;
   const url = method === "GET" ? `${base}?${body}` : base;
   const response = await fetch(url, {
     method,
@@ -125,11 +133,11 @@ export async function mediaPermalink(mediaId: string, token: string): Promise<st
   return result.permalink ?? null;
 }
 
-/** Extends a long-lived token for another 60 days (allowed once it is a day old). */
+/** Extends a long-lived Instagram token for another 60 days (allowed once it is a day old). */
 export async function refreshToken(token: string): Promise<{ token: string; expiresInSeconds: number }> {
   const result = await call<{ access_token: string; expires_in: number }>(
     "GET",
-    `${ROOT}/refresh_access_token`,
+    "refresh_access_token",
     { grant_type: "ig_refresh_token" },
     token,
   );
