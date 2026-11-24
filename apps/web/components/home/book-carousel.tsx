@@ -83,7 +83,7 @@ export function BookCarousel({ slides, href }: { slides: Slide[]; href: string }
             className="w-[62vw] max-w-[260px] shrink-0 snap-start sm:w-[220px] lg:w-[250px]"
             aria-hidden={i !== index ? true : undefined}
           >
-            <Link href={href} className="block" tabIndex={i === index ? 0 : -1}>
+            <Link href={href} className="relative block" tabIndex={i === index ? 0 : -1}>
               {slide.image_url && (
                 <Image
                   src={slide.image_url}
