@@ -20,11 +20,19 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const section = findSection(await getHub(), slug);
+  const hub = await getHub();
+  const section = findSection(hub, slug);
   if (!section) return {};
   // A section with its own menu label (a profile titled with a full name) reads "Title | Label".
   const title = section.nav_label ? { absolute: `${section.title} | ${section.nav_label}` } : section.title;
-  return { title, description: section.description ?? undefined };
+  const description = section.description ?? undefined;
+  const image = section.icon_image_url ?? section.links.find((link) => link.image_url)?.image_url ?? hub?.profile_image_url;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/${slug}` },
+    openGraph: { title: section.title, description, url: `/${slug}`, images: image ? [image] : [] },
+  };
 }
 
 export default async function SectionPage({ params }: PageProps<"/[slug]">) {

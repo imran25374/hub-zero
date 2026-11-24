@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
 
 import { SiteFooter } from "@/components/site-footer";
+import { SITE_URL } from "@/lib/site";
 
 import { baskerville, franklin } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: SITE_URL,
   title: { default: "Imran Naqvi", template: "%s | Imran Naqvi" },
+  openGraph: { type: "website", siteName: "Imran Naqvi", locale: "en_GB" },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

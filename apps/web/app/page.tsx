@@ -5,12 +5,17 @@ import { Notice } from "@/components/notice";
 import { SectionTiles } from "@/components/section-tiles";
 import { BandLead, BandTitle, SkyBand } from "@/components/site-header";
 import { getHub, isProfilePage } from "@/lib/hub";
+import { SITE_URL } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hub = await getHub();
+  const title = hub?.display_name ?? "Imran Naqvi";
+  const description = hub?.identity_statement ?? undefined;
   return {
-    title: { absolute: hub?.display_name ?? "Imran Naqvi" },
-    description: hub?.identity_statement ?? undefined,
+    title: { absolute: title },
+    description,
+    alternates: { canonical: "/" },
+    openGraph: { title, description, url: "/", images: hub?.profile_image_url ? [hub.profile_image_url] : [] },
   };
 }
 
@@ -25,9 +30,20 @@ export default async function HomePage() {
   const inline = hub.sections.filter(rendersInline);
   const tiles = hub.sections.filter((section) => section.home_display !== "hidden" && !rendersInline(section));
   const fullName = hub.sections.find(isProfilePage)?.title ?? hub.display_name;
+  const person = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: fullName,
+    alternateName: hub.display_name,
+    url: SITE_URL.href,
+    image: hub.profile_image_url ?? undefined,
+    description: hub.identity_statement ?? undefined,
+    sameAs: hub.social_links.map((link) => link.url),
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }} />
       <SkyBand hub={hub} photo={hub.cover_image_url} portrait>
         <BandTitle>{fullName}</BandTitle>
         {hub.identity_statement && <BandLead className="sm:text-xl">{hub.identity_statement}</BandLead>}
