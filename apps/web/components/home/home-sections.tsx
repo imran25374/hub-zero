@@ -82,8 +82,8 @@ function HomeGrid({ section }: { section: HubSection }) {
       aria-labelledby={headingId(section)}
       className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28"
     >
-      <div className="grid gap-x-12 gap-y-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center">
-        <div>
+      <div className="grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center">
+        <div className="min-w-0">
           <h2 id={headingId(section)} className={sectionHeading}>
             {section.title}
           </h2>

@@ -66,7 +66,7 @@ export function BookCarousel({ slides, href }: { slides: Slide[]; href: string }
 
   return (
     <div
-      className="relative"
+      className="relative min-w-0"
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
