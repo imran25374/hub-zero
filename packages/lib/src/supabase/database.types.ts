@@ -50,6 +50,12 @@ export const PROFILE_ENTRY_KINDS = [
 ] as const;
 export type ProfileEntryKind = (typeof PROFILE_ENTRY_KINDS)[number];
 
+/** Social publishing queue (social_posts). */
+export type SocialChannel = "instagram";
+export type SocialPostKind = "image" | "carousel" | "reel" | "story";
+export type SocialPostStatus = "draft" | "approved" | "publishing" | "published" | "failed" | "cancelled";
+export type IntegrationProvider = "instagram";
+
 /** How profile entry dates are shown: 2024, Dec 2024 or 3 Dec 2024. */
 export type DatePrecision = "year" | "month" | "day";
 
@@ -389,6 +395,110 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      social_posts: {
+        Row: {
+          id: string;
+          hub_id: string;
+          channel: SocialChannel;
+          kind: SocialPostKind;
+          scheduled_at: string;
+          caption: string;
+          media_urls: string[];
+          cover_url: string | null;
+          share_to_feed: boolean;
+          is_affiliate: boolean;
+          is_ai_generated: boolean;
+          promotes: string | null;
+          status: SocialPostStatus;
+          container_id: string | null;
+          external_id: string | null;
+          permalink: string | null;
+          error: string | null;
+          attempts: number;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          hub_id: string;
+          channel?: SocialChannel;
+          kind: SocialPostKind;
+          scheduled_at: string;
+          caption: string;
+          media_urls: string[];
+          cover_url?: string | null;
+          share_to_feed?: boolean;
+          is_affiliate?: boolean;
+          is_ai_generated?: boolean;
+          promotes?: string | null;
+          status?: SocialPostStatus;
+          container_id?: string | null;
+          external_id?: string | null;
+          permalink?: string | null;
+          error?: string | null;
+          attempts?: number;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          hub_id?: string;
+          channel?: SocialChannel;
+          kind?: SocialPostKind;
+          scheduled_at?: string;
+          caption?: string;
+          media_urls?: string[];
+          cover_url?: string | null;
+          share_to_feed?: boolean;
+          is_affiliate?: boolean;
+          is_ai_generated?: boolean;
+          promotes?: string | null;
+          status?: SocialPostStatus;
+          container_id?: string | null;
+          external_id?: string | null;
+          permalink?: string | null;
+          error?: string | null;
+          attempts?: number;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_hub_id_fkey";
+            columns: ["hub_id"];
+            isOneToOne: false;
+            referencedRelation: "hubs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      integration_tokens: {
+        Row: {
+          provider: IntegrationProvider;
+          account_id: string;
+          token: string;
+          expires_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          provider: IntegrationProvider;
+          account_id: string;
+          token: string;
+          expires_at: string;
+          updated_at?: string;
+        };
+        Update: {
+          provider?: IntegrationProvider;
+          account_id?: string;
+          token?: string;
+          expires_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: { [_ in never]: never };
