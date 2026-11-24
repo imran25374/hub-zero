@@ -4,7 +4,7 @@ import { HomeSection, rendersInline } from "@/components/home/home-sections";
 import { Notice } from "@/components/notice";
 import { SectionTiles } from "@/components/section-tiles";
 import { BandLead, BandTitle, SkyBand } from "@/components/site-header";
-import { getHub } from "@/lib/hub";
+import { getHub, isProfilePage } from "@/lib/hub";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hub = await getHub();
@@ -24,7 +24,7 @@ export default async function HomePage() {
   // (in their order), then a tile for each remaining section, then contact.
   const inline = hub.sections.filter(rendersInline);
   const tiles = hub.sections.filter((section) => section.home_display !== "hidden" && !rendersInline(section));
-  const fullName = hub.sections.find((section) => section.profile_entries.length > 0)?.title ?? hub.display_name;
+  const fullName = hub.sections.find(isProfilePage)?.title ?? hub.display_name;
 
   return (
     <>
