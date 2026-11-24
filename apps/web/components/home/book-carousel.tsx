@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 type Slide = { id: string; title: string; image_url: string | null };
 
 /**
- * The covers on the home page: a strip that scrolls one cover at a time,
+ * The covers on the home page, all at one height (covers differ in ratio,
+ * so widths vary): a strip that scrolls one cover at a time,
  * advancing on its own every few seconds. It stops while the pointer or focus
  * is on it, when the tab is hidden, and for anyone who prefers reduced motion;
  * the arrows and a swipe work regardless. Every cover links to the books page.
@@ -80,18 +81,18 @@ export function BookCarousel({ slides, href }: { slides: Slide[]; href: string }
         {slides.map((slide, i) => (
           <li
             key={slide.id}
-            className="w-[62vw] max-w-[260px] shrink-0 snap-start sm:w-[220px] lg:w-[250px]"
+            className="h-[110vw] max-h-[460px] shrink-0 snap-start sm:h-[392px] lg:h-[445px]"
             aria-hidden={i !== index ? true : undefined}
           >
-            <Link href={href} className="relative block" tabIndex={i === index ? 0 : -1}>
+            <Link href={href} className="relative block h-full" tabIndex={i === index ? 0 : -1}>
               {slide.image_url && (
                 <Image
                   src={slide.image_url}
                   alt={`Cover of ${slide.title}`}
                   width={960}
                   height={1707}
-                  sizes="(min-width: 1024px) 250px, (min-width: 640px) 220px, 62vw"
-                  className="cover-shadow h-auto w-full"
+                  sizes="(min-width: 1024px) 280px, (min-width: 640px) 250px, 70vw"
+                  className="cover-shadow h-full w-auto"
                 />
               )}
               <span className="sr-only">{slide.title}</span>
