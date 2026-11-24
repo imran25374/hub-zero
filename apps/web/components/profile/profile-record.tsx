@@ -145,10 +145,15 @@ function RecordBlock({ kind, entries, section }: { kind: RecordKind; entries: Pr
         <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]">
           {entries.map((entry) => (
             <div key={entry.id} className="contents">
-              <dt className="text-sm font-semibold text-foreground sm:pt-0.5">
-                {entry.url ? <EntryLink href={entry.url}>{entry.title}</EntryLink> : entry.title}
-              </dt>
-              <dd className="text-[1.0625rem] leading-relaxed text-muted-foreground">{entry.body}</dd>
+              <dt className="text-sm font-semibold text-foreground sm:pt-0.5">{entry.title}</dt>
+              <dd className="text-[1.0625rem] leading-relaxed text-muted-foreground">
+                {entry.body}
+                {entry.url && (
+                  <span className="mt-1 block text-sm font-semibold">
+                    <EntryLink href={entry.url}>{linkText(entry.url)}</EntryLink>
+                  </span>
+                )}
+              </dd>
             </div>
           ))}
         </dl>
@@ -322,6 +327,11 @@ function Publications({ entries }: { entries: ProfileEntry[] }) {
 }
 
 /** A link to a page on this site, or to another site in a new tab. */
+/** A link shown as its own address, so a reader sees where it goes: ainisalonstudio.com/studio-media. */
+function linkText(url: string): string {
+  return url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+}
+
 function EntryLink({ href, children }: { href: string; children: React.ReactNode }) {
   const className =
     "text-horizon underline-offset-4 hover:underline";
