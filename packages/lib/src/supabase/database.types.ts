@@ -258,6 +258,11 @@ export type Database = {
           image_url: string | null;
           url: string | null;
           file_url: string | null;
+          image_width: number | null;
+          image_height: number | null;
+          video_url: string | null;
+          duration_seconds: number | null;
+          gallery_urls: string[] | null;
           order_index: number;
           is_published: boolean;
           created_at: string;
@@ -280,6 +285,11 @@ export type Database = {
           image_url?: string | null;
           url?: string | null;
           file_url?: string | null;
+          image_width?: number | null;
+          image_height?: number | null;
+          video_url?: string | null;
+          duration_seconds?: number | null;
+          gallery_urls?: string[] | null;
           order_index?: number;
           is_published?: boolean;
           created_at?: string;
@@ -302,6 +312,11 @@ export type Database = {
           image_url?: string | null;
           url?: string | null;
           file_url?: string | null;
+          image_width?: number | null;
+          image_height?: number | null;
+          video_url?: string | null;
+          duration_seconds?: number | null;
+          gallery_urls?: string[] | null;
           order_index?: number;
           is_published?: boolean;
           created_at?: string;

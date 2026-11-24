@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FormSlot } from "@/components/form-slot";
 import { RichParagraph } from "@/components/rich-text";
 import { BookCarousel } from "@/components/home/book-carousel";
-import { ctaHref, paragraphs, type Hub, type HubSection } from "@/lib/hub";
+import { WritingTile } from "@/components/writing/writing-tile";
+import { ctaHref, latestWriting, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
  * Whether a section is shown in full on the home page. Sections set to
@@ -12,13 +13,16 @@ import { ctaHref, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 export function rendersInline(section: HubSection): boolean {
   return (
     section.home_display === "inline" &&
-    (section.layout_id === "hero-split" || section.layout_id === "magazine-grid")
+    (section.layout_id === "hero-split" ||
+      section.layout_id === "magazine-grid" ||
+      section.layout_id === "portfolio-mosaic")
   );
 }
 
 /** One section of the long-scroll home page, in the form its layout calls for. */
 export function HomeSection({ hub, section }: { hub: Hub; section: HubSection }) {
   if (section.layout_id === "magazine-grid") return <HomeGrid section={section} />;
+  if (section.layout_id === "portfolio-mosaic") return <HomeWriting section={section} />;
   if (section.form_provider) return <HomeSignup section={section} />;
   return <HomeIntro hub={hub} section={section} />;
 }
@@ -104,6 +108,43 @@ function HomeGrid({ section }: { section: HubSection }) {
         </div>
         <BookCarousel slides={section.links} href={`/${section.slug}`} />
       </div>
+    </section>
+  );
+}
+
+/**
+ * Portfolio Mosaic on the home page: the section's description, its four
+ * newest pieces at their own shapes, and a link to the full page.
+ */
+function HomeWriting({ section }: { section: HubSection }) {
+  const latest = latestWriting(section, 4);
+  if (latest.length === 0) return null;
+  return (
+    <section
+      id={section.slug}
+      aria-labelledby={headingId(section)}
+      className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h2 id={headingId(section)} className={sectionHeading}>
+          {section.title}
+        </h2>
+        <Link href={`/${section.slug}`} className="text-sm font-semibold text-primary underline-offset-4 hover:underline">
+          {section.cta_label ?? "All writing"}
+        </Link>
+      </div>
+      {section.excerpt && (
+        <p className="mt-3 max-w-[70ch] text-base leading-relaxed text-muted-foreground">
+          <RichParagraph text={section.excerpt} />
+        </p>
+      )}
+      <ul className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+        {latest.map((entry) => (
+          <li key={entry.id}>
+            <WritingTile entry={entry} href={`/${section.slug}#${entry.id}`} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

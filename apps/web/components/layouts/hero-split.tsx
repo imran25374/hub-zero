@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FormSlot } from "@/components/form-slot";
 import { RichParagraph } from "@/components/rich-text";
 import { ProfileRecord } from "@/components/profile/profile-record";
-import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
+import { isProfilePage, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
  * Hero Split. Its title and headline are in the sky band above. A section with
@@ -13,7 +13,7 @@ import { paragraphs, type Hub, type HubSection } from "@/lib/hub";
  */
 export function HeroSplit({ hub, section }: { hub: Hub; section: HubSection }) {
   const body = paragraphs(section.body);
-  const isProfile = section.profile_entries.length > 0;
+  const isProfile = isProfilePage(section);
 
   if (isProfile) {
     return (

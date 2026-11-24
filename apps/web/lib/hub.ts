@@ -81,6 +81,48 @@ export function groupLinks(links: HubLink[]): { label: string | null; links: Hub
   return groups;
 }
 
+/** Profile entries gathered under their group_label, keeping the database order. */
+export function groupEntries(entries: ProfileEntry[]): { label: string | null; entries: ProfileEntry[] }[] {
+  const groups: { label: string | null; entries: ProfileEntry[] }[] = [];
+  for (const entry of entries) {
+    const last = groups.at(-1);
+    if (last && last.label === entry.group_label) last.entries.push(entry);
+    else groups.push({ label: entry.group_label, entries: [entry] });
+  }
+  return groups;
+}
+
+/**
+ * What an entry was published as: a video that plays on the page, a set of
+ * panels to turn through, or a piece with (at most) one picture.
+ */
+export function mediaOf(entry: ProfileEntry): "video" | "gallery" | "image" {
+  if (entry.video_url) return "video";
+  if (entry.gallery_urls && entry.gallery_urls.length > 0 && entry.kind !== "thesis") return "gallery";
+  return "image";
+}
+
+/** A video length as m:ss. */
+export function formatDuration(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+/**
+ * Whether a section is a profile page: a record with header lines in the sky
+ * band. A writing page also keeps its pieces in profile_entries, but has no header.
+ */
+export function isProfilePage(section: HubSection): boolean {
+  return section.profile_entries.some((entry) => entry.kind === "header");
+}
+
+/** The newest pieces of writing (publications, not the thesis), newest first. */
+export function latestWriting(section: HubSection, count: number): ProfileEntry[] {
+  return entriesOf(section, "publication")
+    .filter((entry) => entry.image_url)
+    .sort((a, b) => (b.start_date ?? "").localeCompare(a.start_date ?? ""))
+    .slice(0, count);
+}
+
 /** Splits long-form text into paragraphs on blank lines. */
 export function paragraphs(text: string | null): string[] {
   return (text ?? "")

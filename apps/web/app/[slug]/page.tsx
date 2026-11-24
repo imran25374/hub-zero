@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { HeroSplit } from "@/components/layouts/hero-split";
 import { LinkList } from "@/components/layouts/link-list";
 import { MagazineGrid } from "@/components/layouts/magazine-grid";
+import { PortfolioMosaic } from "@/components/layouts/portfolio-mosaic";
 import { ProfileBand } from "@/components/profile/profile-record";
 import { BandLead, BandTitle, SkyBand } from "@/components/site-header";
-import { findSection, getHub, type Hub, type HubSection } from "@/lib/hub";
+import { findSection, getHub, isProfilePage, type Hub, type HubSection } from "@/lib/hub";
 
 // Published sections are prerendered. A section published later renders on its
 // first visit. Cache Components needs at least one param at build time, so a
@@ -32,7 +33,7 @@ export default async function SectionPage({ params }: PageProps<"/[slug]">) {
   const section = findSection(hub, slug);
   if (!hub || !section) notFound();
 
-  const isProfile = section.profile_entries.length > 0;
+  const isProfile = isProfilePage(section);
   return (
     <>
       <SkyBand hub={hub} current={section.slug} portrait={isProfile}>
@@ -54,8 +55,10 @@ function SectionLayout({ hub, section }: { hub: Hub; section: HubSection }) {
       return <HeroSplit hub={hub} section={section} />;
     case "magazine-grid":
       return <MagazineGrid section={section} />;
+    case "portfolio-mosaic":
+      return <PortfolioMosaic section={section} />;
     default:
-      // dashboard, portfolio-mosaic, classic-stack: designed in Stage 3.
+      // dashboard, classic-stack: designed in Stage 3.
       return <LinkList section={section} />;
   }
 }
