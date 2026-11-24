@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { FormSlot } from "@/components/form-slot";
 import { RichParagraph } from "@/components/rich-text";
-import { BookGrid } from "@/components/layouts/magazine-grid";
+import { BookCarousel } from "@/components/home/book-carousel";
 import { ctaHref, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
@@ -65,26 +65,45 @@ function HomeIntro({ hub, section }: { hub: Hub; section: HubSection }) {
   );
 }
 
-/** Magazine Grid: the books in one row of covers, with a link to the full page. */
+/**
+ * Magazine Grid on the home page: the covers as a moving strip, one short
+ * synopsis of the books (the section's excerpt) and a link to the full page,
+ * which carries the blurbs and the buy buttons.
+ */
 function HomeGrid({ section }: { section: HubSection }) {
+  const synopsis = section.excerpt ? paragraphs(section.excerpt) : [];
   return (
     <section
       id={section.slug}
       aria-labelledby={headingId(section)}
       className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id={headingId(section)} className={sectionHeading}>
-          {section.title}
-        </h2>
-        <Link href={`/${section.slug}`} className="text-sm font-semibold text-horizon underline-offset-4 hover:underline">
-          All {section.links.length === 4 ? "four" : section.links.length} books
-        </Link>
+      <div className="grid gap-x-12 gap-y-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center">
+        <div>
+          <h2 id={headingId(section)} className={sectionHeading}>
+            {section.title}
+          </h2>
+          {section.description && (
+            <p className="mt-3 text-base leading-relaxed text-muted-foreground">{section.description}</p>
+          )}
+          <div className="mt-5 max-w-[60ch] space-y-4 text-[1.0625rem] leading-[1.6]">
+            {synopsis.map((paragraph, index) => (
+              <p key={index}>
+                <RichParagraph text={paragraph} />
+              </p>
+            ))}
+          </div>
+          <p className="mt-6">
+            <Link
+              href={`/${section.slug}`}
+              className="inline-flex min-h-11 items-center rounded-[3px] bg-primary px-[18px] text-sm font-semibold text-primary-foreground transition-colors hover:bg-horizon-glow"
+            >
+              {section.cta_label ?? "All the books"}
+            </Link>
+          </p>
+        </div>
+        <BookCarousel slides={section.links} href={`/${section.slug}`} />
       </div>
-      {section.description && (
-        <p className="mt-2 max-w-[70ch] text-base leading-relaxed text-muted-foreground">{section.description}</p>
-      )}
-      <BookGrid links={section.links} level={3} />
     </section>
   );
 }

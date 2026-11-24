@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import { Heading, type HeadingLevel } from "@/components/heading";
 import { LinkAction } from "@/components/link-action";
 import { groupLinks, paragraphs, type HubLink, type HubSection } from "@/lib/hub";
 
@@ -48,35 +47,6 @@ function BookRow({ link }: { link: HubLink }) {
         </div>
       </div>
     </article>
-  );
-}
-
-/**
- * The books as one row of covers (the home page): every link in `links`,
- * each card with its group as a small label above the title.
- */
-export function BookGrid({ links, level }: { links: HubLink[]; level: 2 | 3 }) {
-  const titleLevel = level as HeadingLevel;
-  return (
-    <ul className="mt-7 grid gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
-      {links.map((link) => (
-        <li key={link.id} className="flex gap-4 sm:block">
-          <Cover link={link} sizes="(min-width: 1024px) 255px, (min-width: 640px) 45vw, 120px" className="w-[120px] shrink-0 sm:w-full" />
-          <div className="flex min-w-0 flex-col gap-2 sm:mt-4">
-            {link.group_label && (
-              <p className="text-[0.6875rem] font-semibold tracking-[0.1em] text-horizon uppercase">{link.group_label}</p>
-            )}
-            <Heading level={titleLevel} className="font-serif text-[1.3125rem] leading-tight">
-              {link.title}
-            </Heading>
-            {link.description && <p className="text-sm leading-relaxed text-muted-foreground">{link.description}</p>}
-            <div className="mt-auto pt-2">
-              <LinkAction link={link} compact />
-            </div>
-          </div>
-        </li>
-      ))}
-    </ul>
   );
 }
 
