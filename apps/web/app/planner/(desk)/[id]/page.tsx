@@ -34,7 +34,7 @@ async function Post({ params }: Pick<PageProps<"/planner/[id]">, "params">) {
       </Link>
 
       <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="mx-auto w-full max-w-[420px] lg:mx-0">
+        <div className={`mx-auto w-full lg:mx-0 ${post.kind === "story" || post.kind === "reel" ? "max-w-[340px]" : "max-w-[440px]"}`}>
           <MediaPreview kind={post.kind} urls={post.media_urls} cover={post.cover_url} />
         </div>
 

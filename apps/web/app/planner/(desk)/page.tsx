@@ -83,10 +83,10 @@ async function Week({ searchParams }: Pick<PageProps<"/planner">, "searchParams"
           const today = sameDay(day, now);
           return (
             <li key={dateKey(day)} className="min-w-0" aria-label={`${formatWeekday(day)} ${formatDayMonth(day)}`}>
-              <h3 className={`flex items-baseline gap-2 border-b pb-1.5 ${today ? "border-primary" : "border-border"}`}>
-                <span className={`font-serif text-base font-bold ${today ? "text-primary" : ""}`}>{formatWeekday(day)}</span>
+              <h3 className={`flex flex-wrap items-baseline gap-x-2 border-b pb-1.5 lg:block ${today ? "border-primary" : "border-border"}`}>
+                <span className={`font-serif text-base font-bold lg:block ${today ? "text-primary" : ""}`}>{formatWeekday(day)}</span>
                 <span className="text-sm text-muted-foreground">{formatDayMonth(day)}</span>
-                {today && <span className="ml-auto text-xs font-semibold text-primary">Today</span>}
+                {today && <span className="ml-2 text-xs font-semibold text-primary">Today</span>}
               </h3>
               {list.length === 0 ? (
                 <p className="pt-3 text-sm text-muted-foreground/80">Nothing planned</p>
