@@ -44,3 +44,6 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 .idea/
+
+# Media for social posts and ads (kept out of git)
+digital content/
