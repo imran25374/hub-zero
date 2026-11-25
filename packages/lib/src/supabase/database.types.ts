@@ -1,7 +1,7 @@
 /**
  * Types for the Supabase schema in supabase/migrations.
  *
- * Hand-written to match supabase/migrations (schema v1 to v4). Once the Supabase CLI
+ * Hand-written to match supabase/migrations (schema v1 to v7). Once the Supabase CLI
  * is linked, regenerate with:
  *   pnpm dlx supabase gen types typescript --project-id <project-ref> > packages/lib/src/supabase/database.types.ts
  */
@@ -55,6 +55,9 @@ export type SocialChannel = "instagram";
 export type SocialPostKind = "image" | "carousel" | "reel" | "story";
 export type SocialPostStatus = "draft" | "approved" | "publishing" | "published" | "failed" | "cancelled";
 export type IntegrationProvider = "instagram";
+
+/** Roles in hub_members. Only owners until Stage 4. */
+export type HubMemberRole = "owner";
 
 /** How profile entry dates are shown: 2024, Dec 2024 or 3 Dec 2024. */
 export type DatePrecision = "year" | "month" | "day";
@@ -469,6 +472,36 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "social_posts_hub_id_fkey";
+            columns: ["hub_id"];
+            isOneToOne: false;
+            referencedRelation: "hubs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** Who runs a hub (schema v7). Signed-in users read their own rows; the secret key writes. */
+      hub_members: {
+        Row: {
+          hub_id: string;
+          user_id: string;
+          role: HubMemberRole;
+          created_at: string;
+        };
+        Insert: {
+          hub_id: string;
+          user_id: string;
+          role?: HubMemberRole;
+          created_at?: string;
+        };
+        Update: {
+          hub_id?: string;
+          user_id?: string;
+          role?: HubMemberRole;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "hub_members_hub_id_fkey";
             columns: ["hub_id"];
             isOneToOne: false;
             referencedRelation: "hubs";

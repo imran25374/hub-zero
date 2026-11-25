@@ -15,6 +15,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.2",
     "server-only": "^0.0.1"
   }
