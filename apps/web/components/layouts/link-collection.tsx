@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { LinkAction } from "@/components/link-action";
 import type { HubLink } from "@/lib/hub";
@@ -43,6 +43,13 @@ export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: s
   const [picked, setPicked] = useState<View | null>(null);
   const view = picked ?? stored;
 
+  // A link to one item (#fire-tv-stick-4k, from a pin or post) lands on it; the
+  // browser scrolls before a remembered Grid view swaps in, so scroll again after.
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (id) document.getElementById(id)?.scrollIntoView({ block: "start" });
+  }, [view]);
+
   const choose = (next: View) => {
     setPicked(next);
     try {
@@ -62,7 +69,7 @@ export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: s
           {view === "grid" ? (
             <ul className="mt-6 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
               {group.links.map((link) => (
-                <li key={link.id}>
+                <li key={link.id} id={link.anchor ?? undefined} className="scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary">
                   <GridCard link={link} />
                 </li>
               ))}
@@ -70,7 +77,7 @@ export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: s
           ) : (
             <ul className="mt-6 divide-y divide-border border-y border-border">
               {group.links.map((link) => (
-                <li key={link.id}>
+                <li key={link.id} id={link.anchor ?? undefined} className="scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary">
                   <ListRow link={link} />
                 </li>
               ))}

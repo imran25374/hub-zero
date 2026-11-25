@@ -192,6 +192,7 @@ export type Database = {
           subtitle: string | null;
           url: string;
           image_url: string | null;
+          anchor: string | null;
           description: string | null;
           tags: string[];
           is_affiliate: boolean;
@@ -210,6 +211,7 @@ export type Database = {
           subtitle?: string | null;
           url: string;
           image_url?: string | null;
+          anchor?: string | null;
           description?: string | null;
           tags?: string[];
           is_affiliate?: boolean;
@@ -228,6 +230,7 @@ export type Database = {
           subtitle?: string | null;
           url?: string;
           image_url?: string | null;
+          anchor?: string | null;
           description?: string | null;
           tags?: string[];
           is_affiliate?: boolean;
