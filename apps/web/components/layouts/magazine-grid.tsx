@@ -6,6 +6,8 @@ import { groupLinks, paragraphs, type HubLink, type HubSection } from "@/lib/hub
 /**
  * Magazine Grid's own page: one row per item, cover on the left, under the
  * group headings. The page title is in the sky band above (see [slug]/page).
+ * A link's anchor becomes its row's id, so /books#before-us lands on that book
+ * (pins and posts use it) and the row is tinted while it is the URL's target.
  */
 export function MagazineGrid({ section }: { section: HubSection }) {
   const body = paragraphs(section.body);
@@ -22,7 +24,7 @@ export function MagazineGrid({ section }: { section: HubSection }) {
           {group.label && <h2 className="font-serif text-[1.75rem] leading-tight">{group.label}</h2>}
           <ul className={`divide-y divide-border border-y border-border ${group.label ? "mt-5" : ""}`}>
             {group.links.map((link) => (
-              <li key={link.id}>
+              <li key={link.id} id={link.anchor ?? undefined} className="scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary">
                 <BookRow link={link} />
               </li>
             ))}
