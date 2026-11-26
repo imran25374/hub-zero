@@ -7,7 +7,7 @@ import { MagazineGrid } from "@/components/layouts/magazine-grid";
 import { PortfolioMosaic } from "@/components/layouts/portfolio-mosaic";
 import { ProfileBand } from "@/components/profile/profile-record";
 import { BandLead, BandTitle, SkyBand } from "@/components/site-header";
-import { findSection, getHub, isProfilePage, type Hub, type HubSection } from "@/lib/hub";
+import { findSection, getHub, isProfilePage, isUnlisted, type Hub, type HubSection } from "@/lib/hub";
 
 // Published sections are prerendered. A section published later renders on its
 // first visit. Cache Components needs at least one param at build time, so a
@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">): Promis
     description,
     alternates: { canonical: `/${slug}` },
     openGraph: { title: section.title, description, url: `/${slug}`, images: image ? [image] : [] },
+    // Unlisted sections work by link but stay out of search results.
+    ...(isUnlisted(section) && { robots: { index: false, follow: true } }),
   };
 }
 

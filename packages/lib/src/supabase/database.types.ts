@@ -126,6 +126,7 @@ export type Database = {
           cta_label: string | null;
           cta_href: string | null;
           nav_label: string | null;
+          show_in_nav: boolean;
           order_index: number;
           layout_id: LayoutArchetype;
           is_published: boolean;
@@ -147,6 +148,7 @@ export type Database = {
           cta_label?: string | null;
           cta_href?: string | null;
           nav_label?: string | null;
+          show_in_nav?: boolean;
           order_index?: number;
           layout_id: LayoutArchetype;
           is_published?: boolean;
@@ -168,6 +170,7 @@ export type Database = {
           cta_label?: string | null;
           cta_href?: string | null;
           nav_label?: string | null;
+          show_in_nav?: boolean;
           order_index?: number;
           layout_id?: LayoutArchetype;
           is_published?: boolean;

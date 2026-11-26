@@ -162,11 +162,22 @@ export function navLabel(section: HubSection): string {
 }
 
 /**
+ * An unlisted section: off the menu and off the home page, reachable only by its
+ * link (Picks, for visitors arriving from Instagram or Pinterest). It stays out of
+ * the sitemap and search results, so a search for the owner's name doesn't surface it.
+ */
+export function isUnlisted(section: HubSection): boolean {
+  return section.show_in_nav === false && section.home_display === "hidden";
+}
+
+/**
  * Whether a section gets a menu entry. A Hero Split section shown in full on
  * the home page without a record of its own (the short About) lives there;
  * its menu entry would only lead to the same text again.
  */
 export function inNav(section: HubSection): boolean {
+  // Unlisted sections (show_in_nav = false) keep their page but stay off the menu.
+  if (section.show_in_nav === false) return false;
   return !(
     section.home_display === "inline" &&
     section.layout_id === "hero-split" &&
