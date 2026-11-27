@@ -101,6 +101,8 @@ export async function createContainer(
       Object.assign(params, { media_type: "CAROUSEL", children: input.children, caption: input.caption });
       break;
   }
+  // Instagram takes the AI label only on a carousel's container, never on its items.
+  if (params.is_carousel_item) delete params.is_ai_generated;
   const { id } = await call<{ id: string }>("POST", `/${accountId}/media`, params, token);
   return id;
 }

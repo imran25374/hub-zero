@@ -179,7 +179,8 @@ async function createContainers(accountId: string, token: string, post: Post): P
             accountId,
             token,
             isVideo(url) ? { kind: "video", video_url: url, is_carousel_item: true } : { kind: "image", image_url: url, is_carousel_item: true },
-            options,
+            // No AI label on the items: Instagram accepts it only on the carousel container
+            // (it refused the 26 Nov carousel six times for this).
           ),
         );
       }
