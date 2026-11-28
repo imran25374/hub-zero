@@ -81,6 +81,45 @@ export function groupLinks(links: HubLink[]): { label: string | null; links: Hub
   return groups;
 }
 
+/** A group label as a path segment: "Kids and Family" → "kids-and-family". */
+export function groupSlug(label: string): string {
+  return label
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Layouts that show a section's links as the grouped list or grid (LinkList). */
+export function usesLinkList(section: HubSection): boolean {
+  return !["hero-split", "magazine-grid", "portfolio-mosaic"].includes(section.layout_id ?? "");
+}
+
+/**
+ * The categories a section's links fall into, each with its own page
+ * (/picks/beauty). Only a link-list section with two or more labelled groups
+ * gets them; one group alone needs no sub-pages.
+ */
+export function categoriesOf(section: HubSection): { label: string; slug: string; links: HubLink[] }[] {
+  if (!usesLinkList(section)) return [];
+  const labelled = groupLinks(section.links).filter(
+    (group): group is { label: string; links: HubLink[] } => Boolean(group.label),
+  );
+  if (labelled.length < 2) return [];
+  // The same label can appear twice if the database order splits it; merge so each category has one page.
+  const merged = new Map<string, { label: string; slug: string; links: HubLink[] }>();
+  for (const group of labelled) {
+    const slug = groupSlug(group.label);
+    if (!slug) continue;
+    const existing = merged.get(slug);
+    if (existing) existing.links.push(...group.links);
+    else merged.set(slug, { label: group.label, slug, links: [...group.links] });
+  }
+  return [...merged.values()];
+}
+
 /** Profile entries gathered under their group_label, keeping the database order. */
 export function groupEntries(entries: ProfileEntry[]): { label: string | null; entries: ProfileEntry[] }[] {
   const groups: { label: string | null; entries: ProfileEntry[] }[] = [];

@@ -13,13 +13,13 @@ type View = "list" | "grid";
 type Group = { label: string | null; links: HubLink[] };
 
 /**
- * A section's links in groups, as a list (picture, text, button in a row) or a
- * grid of cards. The page always opens as a list; a visitor who picks Grid
- * keeps it on their next visit (remembered in this browser, per section).
- * The switch only appears when the section has pictures.
+ * A section's links in groups, as a grid of cards or a list (picture, text,
+ * button in a row). A section with pictures opens as a grid; a visitor who
+ * picks List keeps it on their next visit (remembered in this browser, per
+ * section). The switch only appears when the section has pictures.
  */
 // The remembered choice lives in localStorage; useSyncExternalStore reads it after
-// hydration (the server always renders the list), so there is no mismatch.
+// hydration (the server renders the default), so there is no mismatch.
 const listeners = new Set<() => void>();
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
@@ -31,24 +31,57 @@ function subscribe(onChange: () => void) {
 }
 function readView(key: string): View {
   try {
-    return window.localStorage.getItem(key) === "grid" ? "grid" : "list";
+    return window.localStorage.getItem(key) === "list" ? "list" : "grid";
   } catch {
-    return "list"; // Storage can be unavailable (private modes); the list is fine.
+    return "grid"; // Storage can be unavailable (private modes); the default is fine.
   }
 }
 
-export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: string; groups: Group[]; showSwitch: boolean }) {
+/**
+ * The item a visitor was sent to: ?item=echo-dot (ads and posts; survives the
+ * tracking parameters Meta appends) or #echo-dot (pins, older links).
+ */
+function linkedItem(): string | null {
+  const fromQuery = new URLSearchParams(window.location.search).get("item");
+  const fromHash = decodeURIComponent(window.location.hash.slice(1));
+  return fromQuery || fromHash || null;
+}
+function subscribeToLocation(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  window.addEventListener("popstate", onChange);
+  return () => {
+    window.removeEventListener("hashchange", onChange);
+    window.removeEventListener("popstate", onChange);
+  };
+}
+
+const ITEM_CLASS = "scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary";
+const FOCUSED_CLASS = "rounded-[3px] bg-secondary outline outline-8 outline-secondary";
+
+export function LinkCollection({
+  sectionId,
+  groups,
+  showSwitch,
+  hideGroupHeadings = false,
+}: {
+  sectionId: string;
+  groups: Group[];
+  showSwitch: boolean;
+  /** On a category page the band already names the one group shown. */
+  hideGroupHeadings?: boolean;
+}) {
   const key = `hub-view:${sectionId}`;
-  const stored = useSyncExternalStore(subscribe, () => (showSwitch ? readView(key) : "list"), () => "list" as View);
+  const fallback: View = showSwitch ? "grid" : "list";
+  const stored = useSyncExternalStore(subscribe, () => (showSwitch ? readView(key) : "list"), () => fallback);
   const [picked, setPicked] = useState<View | null>(null);
+  const focused = useSyncExternalStore(subscribeToLocation, linkedItem, () => null);
   const view = picked ?? stored;
 
-  // A link to one item (#fire-tv-stick-4k, from a pin or post) lands on it; the
-  // browser scrolls before a remembered Grid view swaps in, so scroll again after.
+  // A link to one item (?item=echo-dot from an ad, #echo-dot from a pin) lands on
+  // it and highlights it; scroll again when the view swaps (List remembered).
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.slice(1));
-    if (id) document.getElementById(id)?.scrollIntoView({ block: "start" });
-  }, [view]);
+    if (focused) document.getElementById(focused)?.scrollIntoView({ block: "start" });
+  }, [view, focused]);
 
   const choose = (next: View) => {
     setPicked(next);
@@ -65,11 +98,11 @@ export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: s
       {showSwitch && <ViewSwitch view={view} onChange={choose} />}
       {groups.map((group, index) => (
         <section key={group.label ?? index} className={index === 0 ? (showSwitch ? "mt-4" : "") : "mt-14"}>
-          {group.label && <h2 className="font-serif text-[1.75rem]">{group.label}</h2>}
+          {group.label && !hideGroupHeadings && <h2 className="font-serif text-[1.75rem]">{group.label}</h2>}
           {view === "grid" ? (
             <ul className="mt-6 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
               {group.links.map((link) => (
-                <li key={link.id} id={link.anchor ?? undefined} className="scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary">
+                <li key={link.id} id={link.anchor ?? undefined} className={`${ITEM_CLASS} ${link.anchor && link.anchor === focused ? FOCUSED_CLASS : ""}`}>
                   <GridCard link={link} />
                 </li>
               ))}
@@ -77,7 +110,7 @@ export function LinkCollection({ sectionId, groups, showSwitch }: { sectionId: s
           ) : (
             <ul className="mt-6 divide-y divide-border border-y border-border">
               {group.links.map((link) => (
-                <li key={link.id} id={link.anchor ?? undefined} className="scroll-mt-24 target:rounded-[3px] target:bg-secondary target:outline target:outline-8 target:outline-secondary">
+                <li key={link.id} id={link.anchor ?? undefined} className={`${ITEM_CLASS} ${link.anchor && link.anchor === focused ? FOCUSED_CLASS : ""}`}>
                   <ListRow link={link} />
                 </li>
               ))}
