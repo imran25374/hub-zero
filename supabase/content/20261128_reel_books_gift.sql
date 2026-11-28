@@ -1,7 +1,7 @@
 -- Gift reel for The Redacted Series (28 Nov 2026), as a DRAFT for 10 Dec 2026, 11:00 US Eastern (16:00 UTC).
 -- 15 s, Monsoon dark-teal style; cover art is AI-generated (note on every frame; is_ai_generated sets Instagram's label).
 -- Video on R2 (social/gift-redacted-series.mp4), cover on Supabase Storage. Caption: #ad first, no prices, no Amazon links, 3 hashtags.
--- "promotes" holds the boost link: /books, where the gift panel ("Give the Trilogy") sits at the top.
+-- "promotes" holds the boost link: /books, where the gift panel ("Gift the Trilogy") sits at the top.
 -- Safe to run twice.
 
 insert into public.social_posts

@@ -1,7 +1,7 @@
 -- 28 Nov 2026: gift season for the books (approved by Imran: "1, 2 & 3 agreed").
 --
 -- 1. /books gets a gift panel above the list (code: magazine-grid.tsx, links tagged "gift"):
---    a. "Give the Trilogy": Amazon's add-to-cart link with the three Redacted Series PAPERBACKS
+--    a. "Gift the Trilogy": Amazon's add-to-cart link with the three Redacted Series PAPERBACKS
 --       (Before History B0GZ6CZ6QR, Before Religion B0H12732HM, Before Us B0HJTSV727) and the
 --       Associates tag. Amazon shows a "Please confirm" page listing the three books before anything
 --       is added (tested 28 Nov). The button reads "Add all 3 to Amazon cart".
@@ -23,7 +23,7 @@ select '21454f83-c288-4033-86dd-e8bcac679496', v.title, v.subtitle, v.url, null,
        v.is_affiliate, v.disclosure_line, 'The Redacted Series', v.order_index, true, v.anchor
 from (values
   ('gift',
-   'Give the Trilogy',
+   'Gift the Trilogy',
    'All three Redacted Series paperbacks, added to your Amazon cart in one step',
    'https://www.amazon.com/gp/aws/cart/add.html?AssociateTag=world25374-20&tag=world25374-20&ASIN.1=B0GZ6CZ6QR&Quantity.1=1&ASIN.2=B0H12732HM&Quantity.2=1&ASIN.3=B0HJTSV727&Quantity.3=1',
    'For the reader who always asks how they knew. Before History, Before Religion and Before Us each stand on their own; together they follow one question from the first carved pillars to the minds that left no trace. Amazon shows you the three books and asks you to confirm before anything goes in your cart.',
@@ -39,6 +39,10 @@ where not exists (
   select 1 from public.links l
   where l.section_id = '21454f83-c288-4033-86dd-e8bcac679496' and l.anchor = v.anchor
 );
+
+-- Renamed 28 Nov at Imran's request (was "Give the Trilogy"). Fixes the row if an earlier version of this file already ran.
+update public.links set title = 'Gift the Trilogy'
+where section_id = '21454f83-c288-4033-86dd-e8bcac679496' and anchor = 'gift' and title = 'Give the Trilogy';
 
 -- 2: Before History on /picks (paperback), under Books and Guides, before Joseph's Well (410).
 insert into public.links
