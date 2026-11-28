@@ -4,7 +4,7 @@ import { FormSlot } from "@/components/form-slot";
 import { RichParagraph } from "@/components/rich-text";
 import { BookCarousel } from "@/components/home/book-carousel";
 import { WritingTile } from "@/components/writing/writing-tile";
-import { ctaHref, latestWriting, paragraphs, type Hub, type HubSection } from "@/lib/hub";
+import { ctaHref, isGift, latestWriting, paragraphs, type Hub, type HubSection } from "@/lib/hub";
 
 /**
  * Whether a section is shown in full on the home page. Sections set to
@@ -106,7 +106,7 @@ function HomeGrid({ section }: { section: HubSection }) {
             </Link>
           </p>
         </div>
-        <BookCarousel slides={section.links} href={`/${section.slug}`} />
+        <BookCarousel slides={section.links.filter((link) => !isGift(link))} href={`/${section.slug}`} />
       </div>
     </section>
   );

@@ -70,6 +70,17 @@ export function findLink(hub: Hub | null, id: string): HubLink | undefined {
   return undefined;
 }
 
+/**
+ * Tag on a link that belongs in a section's gift panel (Books: "give the series"
+ * and the printable gift card) rather than in its list. Unpublish the links to
+ * take the panel down after the season.
+ */
+export const GIFT_TAG = "gift";
+
+export function isGift(link: HubLink): boolean {
+  return link.tags.includes(GIFT_TAG);
+}
+
 /** Links gathered under their group_label, keeping the database order. */
 export function groupLinks(links: HubLink[]): { label: string | null; links: HubLink[] }[] {
   const groups: { label: string | null; links: HubLink[] }[] = [];
